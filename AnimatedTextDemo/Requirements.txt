@@ -1,0 +1,8 @@
+﻿
+Comparing two strings 
+_______________________
+
+- merge two strings
+- swap mixed chars ex.(tow -> two)
+- add missing char (comming from to to center) 
+- remove bad char (disapearing from center to down)
