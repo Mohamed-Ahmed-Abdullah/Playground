@@ -6,3 +6,12 @@ _______________________
 - swap mixed chars ex.(tow -> two)
 - add missing char (comming from to to center) 
 - remove bad char (disapearing from center to down)
+
+
+Animations 
+____________
+- insert (from top to center)
+- remove (from center to disapearing)
+- swap (from one place to another)
+- splitting 
+- compining 

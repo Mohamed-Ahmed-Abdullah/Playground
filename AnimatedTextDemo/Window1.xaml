@@ -6,7 +6,6 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized">
     <Window.Resources>
-        
         <DoubleAnimation 
       x:Key="CharacterWaveAnimation" 
       x:Shared="False" 
@@ -19,17 +18,30 @@
       Storyboard.TargetName="textBlk" 
       />
         <DoubleAnimation 
-      x:Key="CharacterWaveAnimation2" 
-      x:Shared="False" 
-      To="20"
-      AccelerationRatio="0.5" 
-      AutoReverse="True"
-      DecelerationRatio="0.5"       
-      Duration="0:0:1"
-      RepeatBehavior="Forever"
-      Storyboard.TargetName="mohamedAhmed" 
-      />
-
+                          x:Key="CharacterWaveAnimation2" 
+                          x:Shared="False" 
+                          To="40"
+                          Duration="0:0:0.5"
+                          Storyboard.TargetName="mohamedAhmed" 
+                          />
+        <DoubleAnimation 
+                          x:Key="CharacterUpAnimation" 
+                          x:Shared="False" 
+                          To="-40"
+                          Duration="0:0:0.5"
+                          Storyboard.TargetName="mohamedAhmed" 
+                          />
+        <DoubleAnimation 
+                          x:Key="CharacterLeftAnimation" 
+                          x:Shared="False" 
+                          Duration="0:0:0.5"
+                          Storyboard.TargetName="mohamedAhmed" 
+                          />
+        <DoubleAnimation
+            x:Key="AnimationScale"
+                Storyboard.TargetName="mohamedAhmed"                
+                To="0.0" Duration="0:0:.009" 
+                 />
         <!-- Makes a character spin in a circle. -->
         <DoubleAnimation 
       x:Key="CharacterRotationAnimation" 
@@ -62,20 +74,11 @@
 
         <Grid>
             <TextBlock x:Name="mohamedAhmed" Text="{Binding ElementName=mATextBox,Path=Text}" 
-                       Foreground="White" Margin="10,50" HorizontalAlignment="Center"/>
+                       Foreground="White" Margin="10,50" HorizontalAlignment="Center" FontSize="50"/>
+            
             <TextBox x:Name="mATextBox" Text="Mohamed Ahmed" HorizontalAlignment="Center"  Margin="10,50"
-                     AcceptsReturn="True" AcceptsTab="True" 
+                     AcceptsReturn="True" AcceptsTab="True" Opacity="0"  FontSize="50"
                      Foreground="White" Background="Transparent" BorderBrush="{x:Null}" SpellCheck.IsEnabled="True" />
         </Grid>
-        
-        <!--<TextBlock 
-                  x:Name="textBlk" 
-                  Foreground="WhiteSmoke"
-                  HorizontalAlignment="Center"
-                  Loaded="StartTextAnimations"
-                  Text="Johann Sebastian Bach" 
-                  VerticalAlignment="Center"
-                  />-->
     </StackPanel>
-
 </Window>

@@ -17,3 +17,13 @@ C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\AnimatedTextDemo\obj\Deb
 C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\AnimatedTextDemo.exe.config
 C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.exe
 C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.pdb
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\AnimatedTextDemo.exe
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\AnimatedTextDemo.pdb
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.csprojResolveAssemblyReference.cache
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\Window1.baml
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\Window1.g.cs
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\App.g.cs
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo_MarkupCompile.cache
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.g.resources
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.Properties.Resources.resources
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.csproj.GenerateResource.Cache
