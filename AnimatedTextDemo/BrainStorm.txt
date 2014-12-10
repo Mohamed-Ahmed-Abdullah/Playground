@@ -15,3 +15,11 @@ ____________
 - swap (from one place to another)
 - splitting 
 - compining 
+
+
+What to do 
+___________
+- textblock in the middle (no need to be infront of the texbox)
+- inserted char should be in green and removed char should be in
+	red and the replacement should be in yellow 
+- 

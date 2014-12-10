@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,20 +29,44 @@ namespace AnimatedTextDemo
 
             mohamedAhmed.Loaded += mohamedAhmed_Loaded;
             mATextBox.ContextMenuOpening += tb_ContextMenuOpening;
+            mATextBox.AddHandler(CommandManager.ExecutedEvent, new RoutedEventHandler(CommandExecuted), true);
         }
 
+        private void CommandExecuted(object sender, RoutedEventArgs e)
+        {
+            var executedRoutedEventArgs = e as ExecutedRoutedEventArgs;
+            if (executedRoutedEventArgs == null)
+                return;
+
+            if (executedRoutedEventArgs.Command == EditingCommands.CorrectSpellingError)
+            {
+                _rightWord = executedRoutedEventArgs.Parameter as string;
+                mohamedAhmed.Text = mATextBox.Text;
+
+                Debug.WriteLine("And Let The Animation begins");
+                Debug.WriteLine("_rightWord=" + _rightWord);
+                Debug.WriteLine("_wrongWord=" + _wrongWord);
+                Debug.WriteLine("_wrongWordStarts=" + _wrongWordStarts);
+                Debug.WriteLine("_wrongWordLength=" + _wrongWordLength);
+                Debug.WriteLine("width=" + MeasureString(_wrongWord).Width);
+            }
+        }
+
+        private string _wrongWord = "";
+        private string _rightWord = "";
+        private int _wrongWordStarts = -1;
+        private int _wrongWordLength = -1;
         private void tb_ContextMenuOpening(object sender, RoutedEventArgs e)
         {
-            // Clear the context menu from its previous suggestions.
             spellCheckContextMenu.Items.Clear();
-
-            // Get the spelling error and add its suggestions to the context menu.
             var caretIndex = mATextBox.CaretIndex;
             var cmdIndex = 0;
             var spellingError = mATextBox.GetSpellingError(caretIndex);
-            var wrongWordSatrts = mATextBox.GetSpellingErrorStart(caretIndex);
-            var wrongWordLength = mATextBox.GetSpellingErrorLength(caretIndex);
-            var wrongWord = new string(mATextBox.Text.Skip(wrongWordSatrts).Take(wrongWordLength).ToArray());
+            _wrongWordStarts = mATextBox.GetSpellingErrorStart(caretIndex);
+            _wrongWordLength = mATextBox.GetSpellingErrorLength(caretIndex);
+            var wrongWord = new string(mATextBox.Text.Skip(_wrongWordStarts).Take(_wrongWordLength).ToArray());
+
+            _wrongWord = wrongWord;
 
             if (spellingError != null)
             {
@@ -53,7 +78,7 @@ namespace AnimatedTextDemo
                         FontWeight = FontWeights.Bold,
                         Command = EditingCommands.CorrectSpellingError,
                         CommandParameter = str,
-                        CommandTarget = mATextBox
+                        CommandTarget = mATextBox,
                     };
                     mATextBox.ContextMenu.Items.Insert(cmdIndex, mi);
                     cmdIndex++;
@@ -74,130 +99,148 @@ namespace AnimatedTextDemo
                 mATextBox.ContextMenu.Items.Insert(cmdIndex, separatorMenuItem2);
             }
         }
+        private Size MeasureString(string candidate)
+        {
+            var formattedText = new FormattedText(
+                candidate,
+                CultureInfo.CurrentUICulture,
+                FlowDirection.LeftToRight,
+                new Typeface(mohamedAhmed.FontFamily, mohamedAhmed.FontStyle, mohamedAhmed.FontWeight, mohamedAhmed.FontStretch),
+                mohamedAhmed.FontSize,
+                Brushes.Black);
+
+            return new Size(formattedText.Width, formattedText.Height);
+        }
 
         public async Task DoIt()
         {
-            //await Task.Delay(1100);
+            PrepareTextEffect();
             Down(0);
             await Task.Delay(1100);
             Up(1);
             await Task.Delay(1100);
-            Right(1,2);
+            Right(1, 2);
             await Task.Delay(1100);
-            Left(2,3);
+            Left(3, 4);
         }
 
         void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
         {
             DoIt();
-            //Right(3,4);
-            //Left(4,5);
+        }
+
+        public void PrepareTextEffect()
+        {
+            mohamedAhmed.TextEffects = new TextEffectCollection();
+            for (var i = 0; i < mohamedAhmed.Text.Count(); i++)
+            {
+                var transGrp = new TransformGroup();
+                transGrp.Children.Add(new TranslateTransform());
+                transGrp.Children.Add(new ScaleTransform());
+
+                //color changing animation
+                //var solidColorBrush = new SolidColorBrush();
+                //solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
+                //    FindResource("ColorAnimation") as ColorAnimation);
+
+                mohamedAhmed.TextEffects.Add(new TextEffect
+                {
+                    PositionStart = i,
+                    PositionCount = 1,
+                    Transform = transGrp,
+                    //Foreground = solidColorBrush
+                });
+            }
         }
 
         public void Down(int index)
         {
-            mohamedAhmed.TextEffects = new TextEffectCollection();
             var storyBoardWave = new Storyboard();
             var storyBoardScale = new Storyboard();
-            for (var i = 0; i <= index; ++i)
-            {
-                //move down
-                var transGrp = new TransformGroup();
-                transGrp.Children.Add(new TranslateTransform());
-                transGrp.Children.Add(new ScaleTransform());
 
-                mohamedAhmed.TextEffects.Add(new TextEffect
-                {
-                    PositionStart = i,
-                    PositionCount = 1,
-                    Transform = transGrp
-                });
-                var anim = FindResource("CharacterWaveAnimation2") as DoubleAnimation;
-                
-                storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
 
-                Storyboard.SetTargetProperty(anim, new PropertyPath(
-                    String.Format("TextEffects[{0}].Transform.Children[0].Y",index)));
-                storyBoardWave.Children.Add(anim);
+            //color animation 
+            var solidColorBrush = new SolidColorBrush();
+            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
+                FindResource("ColorAnimationRed") as ColorAnimation);
 
-                //disapear
-                var animation = FindResource("AnimationScale") as DoubleAnimation;
-                Storyboard.SetTargetProperty(animation,
-                    new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
-                storyBoardScale.Children.Add(animation);
-                storyBoardScale.BeginTime = TimeSpan.FromSeconds(1);
+            var textEffect = mohamedAhmed.TextEffects[index];
+            textEffect.Foreground = solidColorBrush;
 
-            }
+            //move down
+            var anim = FindResource("CharacterWaveAnimation2") as DoubleAnimation;
+
+            storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
+
+            Storyboard.SetTargetProperty(anim, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
+            storyBoardWave.Children.Add(anim);
+
+            //disapear
+            var animation = FindResource("AnimationScale") as DoubleAnimation;
+            Storyboard.SetTargetProperty(animation,
+                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
+            storyBoardScale.Children.Add(animation);
+            storyBoardScale.BeginTime = TimeSpan.FromSeconds(1);
+
+
             storyBoardWave.Begin(this);
             storyBoardScale.Begin(this);
         }
+
         public void Up(int index)
         {
-            mohamedAhmed.TextEffects = new TextEffectCollection();
             var storyBoardWave = new Storyboard();
             var storyBoardScale = new Storyboard();
-            for (var i = 0; i <= index; ++i)
-            {
-                //move down
-                var transGrp = new TransformGroup();
-                transGrp.Children.Add(new TranslateTransform());
-                transGrp.Children.Add(new ScaleTransform());
 
-                mohamedAhmed.TextEffects.Add(new TextEffect
-                {
-                    PositionStart = i,
-                    PositionCount = 1,
-                    Transform = transGrp
-                });
-                var anim = FindResource("CharacterUpAnimation") as DoubleAnimation;
-                
-                storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
+            //color animation 
+            var solidColorBrush = new SolidColorBrush();
+            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
+                FindResource("ColorAnimationGreen") as ColorAnimation);
 
-                Storyboard.SetTargetProperty(anim, new PropertyPath(
-                    String.Format("TextEffects[{0}].Transform.Children[0].Y",index)));
-                storyBoardWave.Children.Add(anim);
+            var textEffect = mohamedAhmed.TextEffects[index];
+            textEffect.Foreground = solidColorBrush;
 
-                //disapear
-                var animation = FindResource("AnimationScale") as DoubleAnimation;
-                Storyboard.SetTargetProperty(animation,
-                    new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
-                storyBoardScale.Children.Add(animation);
-                storyBoardScale.BeginTime = TimeSpan.FromSeconds(1);
+            //move down
+            var anim = FindResource("CharacterUpAnimation") as DoubleAnimation;
 
-            }
+            storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
+
+            Storyboard.SetTargetProperty(anim, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
+            storyBoardWave.Children.Add(anim);
+
+            //disapear
+            var animation = FindResource("AnimationScale") as DoubleAnimation;
+            Storyboard.SetTargetProperty(animation,
+                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
+            storyBoardScale.Children.Add(animation);
+            storyBoardScale.BeginTime = TimeSpan.FromSeconds(1);
+
+
             storyBoardWave.Begin(this);
             storyBoardScale.Begin(this);
         }
         public void Left(int from, int to)
         {
-            Move(from, to,true);
+            Move(from, to, true);
         }
         public void Right(int from, int to)
         {
-            Move(from, to,false);
+            Move(from, to, false);
         }
 
         private void Move(int from, int to, bool isLeft)
         {
-            mohamedAhmed.TextEffects = new TextEffectCollection();
             var storyBoardWave = new Storyboard();
             for (var i = 0; i <= to; ++i)
             {
-                var transGrp = new TransformGroup();
-                transGrp.Children.Add(new TranslateTransform());
-                transGrp.Children.Add(new ScaleTransform());
+                if (i < from || i > to) continue;
 
-                mohamedAhmed.TextEffects.Add(new TextEffect
-                {
-                    PositionStart = i,
-                    PositionCount = 1,
-                    Transform = transGrp
-                });
                 var anim = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-                anim.To = (mohamedAhmed.FontSize / 2) * (isLeft?-1:1);
+                anim.To = (mohamedAhmed.FontSize / 2) * (isLeft ? -1 : 1);
                 storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
 
-                if (i < from || i > to) continue;
 
                 Storyboard.SetTargetProperty(anim, new PropertyPath(
                     String.Format("TextEffects[{0}].Transform.Children[0].X", i)));

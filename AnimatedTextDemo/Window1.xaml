@@ -1,84 +1,59 @@
 ﻿<Window x:Class="AnimatedTextDemo.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Animated Text Demo" Height="300" Width="400"
+    Title="Animated Text Demo" Height="500" Width="800"
     FontSize="40" Background="Black"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized">
     <Window.Resources>
-        <DoubleAnimation 
-      x:Key="CharacterWaveAnimation" 
-      x:Shared="False" 
-      To="20"
-      AccelerationRatio="0.5" 
-      AutoReverse="True"
-      DecelerationRatio="0.5"       
-      Duration="0:0:1"
-      RepeatBehavior="Forever"
-      Storyboard.TargetName="textBlk" 
-      />
-        <DoubleAnimation 
-                          x:Key="CharacterWaveAnimation2" 
-                          x:Shared="False" 
-                          To="40"
-                          Duration="0:0:0.5"
-                          Storyboard.TargetName="mohamedAhmed" 
-                          />
-        <DoubleAnimation 
-                          x:Key="CharacterUpAnimation" 
-                          x:Shared="False" 
-                          To="-40"
-                          Duration="0:0:0.5"
-                          Storyboard.TargetName="mohamedAhmed" 
-                          />
-        <DoubleAnimation 
-                          x:Key="CharacterLeftAnimation" 
-                          x:Shared="False" 
-                          Duration="0:0:0.5"
-                          Storyboard.TargetName="mohamedAhmed" 
-                          />
-        <DoubleAnimation
-            x:Key="AnimationScale"
-                Storyboard.TargetName="mohamedAhmed"                
-                To="0.0" Duration="0:0:.009" 
-                 />
-        <!-- Makes a character spin in a circle. -->
-        <DoubleAnimation 
-      x:Key="CharacterRotationAnimation" 
-      x:Shared="False" 
-      To="360"
-      AccelerationRatio="0.5" 
-      DecelerationRatio="0.5"
-      Duration="0:0:2" 
-      Storyboard.TargetName="textBlk" 
-      />
-        <DoubleAnimation 
-      x:Key="CharacterRotationAnimation2" 
-      x:Shared="False" 
-      To="360"
-      AccelerationRatio="0.5" 
-      DecelerationRatio="0.5"
-      Duration="0:0:2" 
-      Storyboard.TargetName="mohamedAhmed" 
-      />
+        <DoubleAnimation x:Key="CharacterWaveAnimation" x:Shared="False" 
+                         To="20" AccelerationRatio="0.5" AutoReverse="True"
+                         DecelerationRatio="0.5" Duration="0:0:1"
+                         RepeatBehavior="Forever" Storyboard.TargetName="textBlk" />
 
-        <!-- Creates a pause between rotations 
-         of the entire string. -->
-        <DoubleAnimation 
-      x:Key="CharacterRotationPauseAnimation"
-      Duration="0:0:8"
-      Storyboard.TargetProperty="Opacity" 
-      />
+        <DoubleAnimation x:Key="CharacterWaveAnimation2" x:Shared="False" 
+                         To="40" Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
+
+        <DoubleAnimation x:Key="CharacterUpAnimation" x:Shared="False" 
+                         To="-40" Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
+
+        <DoubleAnimation x:Key="CharacterLeftAnimation" x:Shared="False" 
+                         Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
+
+        <DoubleAnimation x:Key="AnimationScale" Storyboard.TargetName="mohamedAhmed"                
+                         To="0.0" Duration="0:0:.009" />
+
+        <DoubleAnimation x:Key="CharacterRotationAnimation" x:Shared="False" 
+                         To="360" AccelerationRatio="0.5" 
+                         DecelerationRatio="0.5" Duration="0:0:2" 
+                         Storyboard.TargetName="textBlk" />
+
+        <DoubleAnimation x:Key="CharacterRotationAnimation2" x:Shared="False" 
+                         To="360" AccelerationRatio="0.5" 
+                         DecelerationRatio="0.5" Duration="0:0:2" 
+                         Storyboard.TargetName="mohamedAhmed" />
+
+        <DoubleAnimation x:Key="CharacterRotationPauseAnimation" Duration="0:0:8"
+                         Storyboard.TargetProperty="Opacity" />
+
+        <ColorAnimation x:Key="ColorAnimationRed" x:Shared="True" 
+                        Duration="0:0:.8" 
+                        Storyboard.TargetName="mohamedAhmed"
+                        To="Red"  />
+        <ColorAnimation x:Key="ColorAnimationGreen" x:Shared="True" 
+                        Duration="0:0:.8" 
+                        Storyboard.TargetName="mohamedAhmed"
+                        To="Green"  />
     </Window.Resources>
-    <StackPanel Orientation="Vertical">
 
-        <Grid>
-            <TextBlock x:Name="mohamedAhmed" Text="{Binding ElementName=mATextBox,Path=Text}" 
-                       Foreground="White" Margin="10,50" HorizontalAlignment="Center" FontSize="50"/>
-            
-            <TextBox x:Name="mATextBox" Text="Mohamed Ahmed" HorizontalAlignment="Center"  Margin="10,50"
-                     AcceptsReturn="True" AcceptsTab="True" Opacity="0"  FontSize="50"
-                     Foreground="White" Background="Transparent" BorderBrush="{x:Null}" SpellCheck.IsEnabled="True" />
-        </Grid>
-    </StackPanel>
+    <Grid>
+        <TextBlock x:Name="mohamedAhmed"
+                   Text="{Binding ElementName=mATextBox,Path=Text,UpdateSourceTrigger=PropertyChanged}"
+                   Foreground="Yellow" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
+                   FontSize="50" Margin="3,1,0,0"/>
+
+        <TextBox x:Name="mATextBox" Text="Mohamed Ahmed haed Abdullah Mohamed" HorizontalAlignment="Stretch" 
+                 AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Opacity=".7"  FontSize="50"
+                 Foreground="White" Background="Transparent" BorderBrush="{x:Null}" SpellCheck.IsEnabled="True" />
+    </Grid>
 </Window>
