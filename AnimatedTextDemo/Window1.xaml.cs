@@ -115,13 +115,15 @@ namespace AnimatedTextDemo
         public async Task DoIt()
         {
             PrepareTextEffect();
-            Down(0);
-            await Task.Delay(1100);
-            Up(1);
-            await Task.Delay(1100);
-            Right(1, 2);
-            await Task.Delay(1100);
-            Left(3, 4);
+            //Down(0);
+            //await Task.Delay(1100);
+            //Up(1);
+            //await Task.Delay(1100);
+            //Right(1, 2);
+            //await Task.Delay(1100);
+            //Left(3, 4);
+            //await Task.Delay(1100);
+            Swap(1, 6);
         }
 
         void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
@@ -138,17 +140,11 @@ namespace AnimatedTextDemo
                 transGrp.Children.Add(new TranslateTransform());
                 transGrp.Children.Add(new ScaleTransform());
 
-                //color changing animation
-                //var solidColorBrush = new SolidColorBrush();
-                //solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
-                //    FindResource("ColorAnimation") as ColorAnimation);
-
                 mohamedAhmed.TextEffects.Add(new TextEffect
                 {
                     PositionStart = i,
                     PositionCount = 1,
                     Transform = transGrp,
-                    //Foreground = solidColorBrush
                 });
             }
         }
@@ -221,10 +217,49 @@ namespace AnimatedTextDemo
             storyBoardWave.Begin(this);
             storyBoardScale.Begin(this);
         }
+
+        public void Swap(int index1,int index2)
+        {
+            var storyBoardWave = new Storyboard();
+            //move down
+            var up = FindResource("CharacterUpAnimation") as DoubleAnimation;
+            Storyboard.SetTargetProperty(up, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", index1)));
+            up.AutoReverse = true;
+
+            var left = FindResource("CharacterLeftAnimation") as DoubleAnimation;
+            left.To = (mohamedAhmed.FontSize / 2) * 1;
+            left.Duration = TimeSpan.FromSeconds(1);
+            Storyboard.SetTargetProperty(left, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].X", index1)));
+
+            storyBoardWave.Children.Add(left);
+            storyBoardWave.Children.Add(up);
+
+            var up2 = FindResource("CharacterUpAnimation") as DoubleAnimation;
+            Storyboard.SetTargetProperty(up2, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", index2)));
+            up2.AutoReverse = true;
+
+            var left2 = FindResource("CharacterLeftAnimation") as DoubleAnimation;
+            left2.To = (mohamedAhmed.FontSize / 2) * -1;
+            left2.Duration = TimeSpan.FromSeconds(1);
+            Storyboard.SetTargetProperty(left2, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].X", index2)));
+
+            storyBoardWave.Children.Add(left2);
+            storyBoardWave.Children.Add(up2);
+
+
+            storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
+            storyBoardWave.Begin(this);
+        }
+
         public void Left(int from, int to)
         {
             Move(from, to, true);
         }
+
         public void Right(int from, int to)
         {
             Move(from, to, false);
