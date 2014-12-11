@@ -115,15 +115,15 @@ namespace AnimatedTextDemo
         public async Task DoIt()
         {
             PrepareTextEffect();
-            //Down(0);
-            //await Task.Delay(1100);
-            //Up(1);
-            //await Task.Delay(1100);
-            //Right(1, 2);
-            //await Task.Delay(1100);
-            //Left(3, 4);
-            //await Task.Delay(1100);
-            Swap(1, 6);
+            Down(0);
+            await Task.Delay(1100);
+            Up(1);
+            await Task.Delay(1100);
+            Right(1, 2);
+            await Task.Delay(1100);
+            Left(3, 4);
+            await Task.Delay(1100);
+            Swap(5, 6);
         }
 
         void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
