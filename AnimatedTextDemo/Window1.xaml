@@ -47,12 +47,13 @@
     </Window.Resources>
 
     <Grid>
+        <!--Text="{Binding ElementName=mATextBox,Path=Text,UpdateSourceTrigger=PropertyChanged}"-->
         <TextBlock x:Name="mohamedAhmed"
-                   Text="{Binding ElementName=mATextBox,Path=Text,UpdateSourceTrigger=PropertyChanged}"
+                   
                    Foreground="Yellow" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
                    FontSize="50" Margin="3,1,0,0"/>
 
-        <TextBox x:Name="mATextBox" Text="Mohamed Ahmed haed Abdullah Mohamed" HorizontalAlignment="Stretch" 
+        <TextBox x:Name="mATextBox" Text="Mohamedasdfdklj Ahmed haed Abdullah Mohamed" HorizontalAlignment="Stretch" 
                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Opacity=".7"  FontSize="50"
                  Foreground="White" Background="Transparent" BorderBrush="{x:Null}" SpellCheck.IsEnabled="True" />
     </Grid>

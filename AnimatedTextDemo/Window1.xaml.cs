@@ -21,6 +21,7 @@ namespace AnimatedTextDemo
     public partial class Window1
     {
         private ContextMenu spellCheckContextMenu;
+
         public Window1()
         {
             InitializeComponent();
@@ -41,6 +42,11 @@ namespace AnimatedTextDemo
             if (executedRoutedEventArgs.Command == EditingCommands.CorrectSpellingError)
             {
                 _rightWord = executedRoutedEventArgs.Parameter as string;
+                var spaces = GetEmptyString(MeasureString(_wrongWord).Width).ToArray();
+                var first = mATextBox.Text.Take(_wrongWordStarts).ToArray();
+                var second = mATextBox.Text.Skip(_wrongWordStarts + _wrongWordLength).ToArray();
+                mATextBox.Text = new string(first.Concat(spaces).Concat(second).ToArray());
+
                 mohamedAhmed.Text = mATextBox.Text;
 
                 Debug.WriteLine("And Let The Animation begins");
@@ -56,6 +62,7 @@ namespace AnimatedTextDemo
         private string _rightWord = "";
         private int _wrongWordStarts = -1;
         private int _wrongWordLength = -1;
+
         private void tb_ContextMenuOpening(object sender, RoutedEventArgs e)
         {
             spellCheckContextMenu.Items.Clear();
@@ -99,6 +106,27 @@ namespace AnimatedTextDemo
                 mATextBox.ContextMenu.Items.Insert(cmdIndex, separatorMenuItem2);
             }
         }
+
+        public string GetEmptyString(double stringWidth)
+        {
+            var spaces = "";
+
+            while (true)
+            {
+                if (MeasureString(spaces).Width >= stringWidth)
+                    break;
+                spaces += "_";
+            }
+
+            var withoutLastCharString = new string(spaces.Skip(1).ToArray());
+            var withLastChar = MeasureString(spaces).Width - stringWidth;
+            var withoutLastChar = stringWidth - MeasureString(withoutLastCharString).Width;
+            if (withLastChar > withoutLastChar)
+                spaces = withoutLastCharString;
+
+            return spaces;
+        }
+
         private Size MeasureString(string candidate)
         {
             var formattedText = new FormattedText(
@@ -108,7 +136,6 @@ namespace AnimatedTextDemo
                 new Typeface(mohamedAhmed.FontFamily, mohamedAhmed.FontStyle, mohamedAhmed.FontWeight, mohamedAhmed.FontStretch),
                 mohamedAhmed.FontSize,
                 Brushes.Black);
-
             return new Size(formattedText.Width, formattedText.Height);
         }
 
@@ -123,12 +150,12 @@ namespace AnimatedTextDemo
             await Task.Delay(1100);
             Left(3, 4);
             await Task.Delay(1100);
-            Swap(5, 6);
+            Swap(5, 8);
         }
 
         void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
         {
-            DoIt();
+            //DoIt();
         }
 
         public void PrepareTextEffect()
@@ -228,7 +255,9 @@ namespace AnimatedTextDemo
             up.AutoReverse = true;
 
             var left = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-            left.To = (mohamedAhmed.FontSize / 2) * 1;
+            var distance = Math.Abs(index1 - index2);
+            //fontsize /2 => in assumption that any distance between two chars is fontsize/2
+            left.To = (mohamedAhmed.FontSize / 2) * distance;
             left.Duration = TimeSpan.FromSeconds(1);
             Storyboard.SetTargetProperty(left, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].X", index1)));
@@ -242,7 +271,7 @@ namespace AnimatedTextDemo
             up2.AutoReverse = true;
 
             var left2 = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-            left2.To = (mohamedAhmed.FontSize / 2) * -1;
+            left2.To = (mohamedAhmed.FontSize / 2) * -distance;
             left2.Duration = TimeSpan.FromSeconds(1);
             Storyboard.SetTargetProperty(left2, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].X", index2)));
