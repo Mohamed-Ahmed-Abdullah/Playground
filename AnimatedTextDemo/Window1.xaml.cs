@@ -46,7 +46,7 @@ namespace AnimatedTextDemo
                 var first = mATextBox.Text.Take(_wrongWordStarts).ToArray();
                 var second = mATextBox.Text.Skip(_wrongWordStarts + _wrongWordLength).ToArray();
                 mATextBox.Text = new string(first.Concat(spaces).Concat(second).ToArray());
-
+                 
                 mohamedAhmed.Text = mATextBox.Text;
 
                 Debug.WriteLine("And Let The Animation begins");
