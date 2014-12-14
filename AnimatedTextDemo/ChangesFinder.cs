@@ -15,7 +15,7 @@ namespace AnimatedTextDemo
             for (var i = 2; i < wrong.Length + 1; i++)
             {
                 //if (i % 2 == 0)
-                { 
+                {
                     var matches = new List<string>();
                     var subStringToMatch = wrong.Substring(i - 2, 2);
                     for (var j = 1; j <= wrong.Length; j++)
@@ -188,43 +188,39 @@ namespace AnimatedTextDemo
             return insert.Union(remove).Union(swaps).Union(replace).ToList();
         }
 
-        public class Change
-        {
-            public ChangeType ChangeType { get; set; }
-            public int Index { get; set; }
-            /// <summary>
-            /// used when the change type is swap
-            /// </summary>
-            public int Index2 { get; set; }
-            public char Character { get; set; }
-            /// <summary>
-            /// used when the change type is swap
-            /// </summary>
-            public char Character2 { get; set; }
-
-            public override string ToString()
-            {
-                return ChangeType + " " + Character + " " + Index;
-            }
-        }
-
-        public class Match
-        {
-
-        }
-
-        public enum ChangeType
-        {
-            Insert = 1,
-            Remove = 2,
-            Swap = 3,
-            Replace = 4, //when you have insert and remove in the same place (same index)
-        }
 
         private class StringObject
         {
             public string Text { get; set; }
         }
+    }
+    public class Change
+    {
+        public ChangeType ChangeType { get; set; }
+        public int Index { get; set; }
+        /// <summary>
+        /// used when the change type is swap
+        /// </summary>
+        public int? Index2 { get; set; }
+        public char Character { get; set; }
+        /// <summary>
+        /// used when the change type is swap
+        /// </summary>
+        public char? Character2 { get; set; }
+
+        public override string ToString()
+        {
+            return "[" + ChangeType + "] " + "Index:" + Index + (Index2 == null ? " " : " Index2:" + Index2)
+                   + " Character:" + Character + (Character2 == null ? " " : " Character2:" + Character2);
+        }
+    }
+
+    public enum ChangeType
+    {
+        Insert = 1,
+        Remove = 2,
+        Swap = 3,
+        Replace = 4, //when you have insert and remove in the same place (same index)
     }
 
     public static class Extentions

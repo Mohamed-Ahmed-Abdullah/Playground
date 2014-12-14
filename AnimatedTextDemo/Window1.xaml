@@ -14,7 +14,7 @@
         <DoubleAnimation x:Key="CharacterWaveAnimation2" x:Shared="False" 
                          To="40" Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
 
-        <DoubleAnimation x:Key="CharacterUpAnimation" x:Shared="False" 
+        <DoubleAnimation x:Key="CharacterMoveAnimation" x:Shared="False" 
                          To="-40" Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
 
         <DoubleAnimation x:Key="CharacterLeftAnimation" x:Shared="False" 
@@ -37,19 +37,19 @@
                          Storyboard.TargetProperty="Opacity" />
 
         <ColorAnimation x:Key="ColorAnimationRed" x:Shared="True" 
-                        Duration="0:0:.8" 
+                        Duration="0:0:0" 
                         Storyboard.TargetName="mohamedAhmed"
                         To="Red"  />
         <ColorAnimation x:Key="ColorAnimationGreen" x:Shared="True" 
-                        Duration="0:0:.8" 
+                        Duration="0:0:0" 
                         Storyboard.TargetName="mohamedAhmed"
                         To="Green"  />
     </Window.Resources>
 
     <Grid>
-        <!--Text="{Binding ElementName=mATextBox,Path=Text,UpdateSourceTrigger=PropertyChanged}"-->
+        <!---->
         <TextBlock x:Name="mohamedAhmed"
-                   
+                   Text="{Binding ElementName=mATextBox,Path=Text,UpdateSourceTrigger=PropertyChanged}"
                    Foreground="Yellow" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
                    FontSize="50" Margin="3,1,0,0"/>
 
