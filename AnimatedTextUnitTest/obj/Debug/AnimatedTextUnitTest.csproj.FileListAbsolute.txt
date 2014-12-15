@@ -5,3 +5,10 @@ C:\Users\M\Downloads\APPs\animatedtextdemozip\AnimatedTextDemo\AnimatedTextUnitT
 C:\Users\M\Downloads\APPs\animatedtextdemozip\AnimatedTextDemo\AnimatedTextUnitTest\obj\Debug\AnimatedTextUnitTest.csprojResolveAssemblyReference.cache
 C:\Users\M\Downloads\APPs\animatedtextdemozip\AnimatedTextDemo\AnimatedTextUnitTest\obj\Debug\AnimatedTextUnitTest.dll
 C:\Users\M\Downloads\APPs\animatedtextdemozip\AnimatedTextDemo\AnimatedTextUnitTest\obj\Debug\AnimatedTextUnitTest.pdb
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\bin\Debug\AnimatedTextUnitTest.dll
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\bin\Debug\AnimatedTextUnitTest.pdb
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\bin\Debug\AnimatedTextDemo.exe
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\bin\Debug\AnimatedTextDemo.pdb
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\obj\Debug\AnimatedTextUnitTest.csprojResolveAssemblyReference.cache
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\obj\Debug\AnimatedTextUnitTest.dll
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextUnitTest\obj\Debug\AnimatedTextUnitTest.pdb

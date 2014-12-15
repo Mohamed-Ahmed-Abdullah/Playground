@@ -12,18 +12,18 @@ namespace AnimatedTextDemo
         {
             var globalMatches = new List<StringObject>();
 
-            for (var i = 2; i < wrong.Length + 1; i++)
+            for (var i = 0; i < wrong.Length; i++)
             {
                 //if (i % 2 == 0)
                 {
                     var matches = new List<string>();
-                    var subStringToMatch = wrong.Substring(i - 2, 2);
-                    for (var j = 1; j <= wrong.Length; j++)
+                    var subStringToMatch = wrong.Substring(i, 1);
+                    for (var j = 0; j < wrong.Length; j++)
                     {
-                        if (right.IndexOf(subStringToMatch) != -1)
+                        if (right.IndexOf(subStringToMatch,i) != -1)
                         {
                             matches.Add(subStringToMatch);
-                            try { subStringToMatch = wrong.Substring(i - 2, j + 2); }
+                            try { subStringToMatch = wrong.Substring(i , j + 1); }
                             catch (Exception) { break; }
                         }
                         else
@@ -37,7 +37,10 @@ namespace AnimatedTextDemo
             //filter globalMatches
             foreach (var match in globalMatches.ToList())
             {
-                if (globalMatches.Where(w => w != match).Any(a => a.Text.Contains(match.Text)))
+                //2th indexof there leave it
+                if (globalMatches.Where(w => w != match).
+                    Any(a => match.Text.Length < 2 //hacky solution to solve a bug
+                    || (a.Text.Contains(match.Text) && right.IndexOfNth(match.Text, 0, 2) == -1)) ) //the same hacky solution
                     globalMatches.Remove(match);
             }
             var stringGlobalMatches = globalMatches.Select(s => s.Text).ToList();
@@ -51,7 +54,7 @@ namespace AnimatedTextDemo
                     if (wrong[i] == right[i])
                         stringGlobalMatches.Add(wrong[i] + "");
             }
-
+            //return new List<string> {"requ", "re"};
             return stringGlobalMatches;
         }
 
@@ -61,7 +64,7 @@ namespace AnimatedTextDemo
             //detect
             foreach (var sub in subMatches)
             {
-                var index = right.IndexOf(sub);
+                var index = right.LastIndexOf(sub);
 
                 for (var i = index; i < index + sub.Count(); i++)
                     indexesMathched.Add(i);
@@ -87,7 +90,7 @@ namespace AnimatedTextDemo
             //detect
             foreach (var sub in subMatches)
             {
-                var index = wrong.IndexOf(sub);
+                var index = wrong.LastIndexOf(sub);
 
                 for (var i = index; i < index + sub.Count(); i++)
                     indexesMathched.Add(i);
@@ -232,6 +235,18 @@ namespace AnimatedTextDemo
             textArray[index1] = textArray[index2];
             textArray[index2] = temp;
             return new string(textArray);
+        }
+
+        public static int IndexOfNth(this string input, string value, int startIndex, int nth)
+        {
+            if (nth < 1)
+                throw new NotSupportedException("Param 'nth' must be greater than 0!");
+            if (nth == 1)
+                return input.IndexOf(value, startIndex);
+            var idx = input.IndexOf(value, startIndex);
+            if (idx == -1)
+                return -1;
+            return input.IndexOfNth(value, idx + 1, --nth);
         }
     }
 }
