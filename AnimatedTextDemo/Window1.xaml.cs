@@ -24,7 +24,6 @@ namespace AnimatedTextDemo
 
         public Window1()
         {
-            //var changes = Matches("requre", "require");
             InitializeComponent();
             spellCheckContextMenu = new ContextMenu();
             mATextBox.ContextMenu = spellCheckContextMenu;
@@ -33,21 +32,6 @@ namespace AnimatedTextDemo
             mATextBox.ContextMenuOpening += tb_ContextMenuOpening;
             mATextBox.AddHandler(CommandManager.ExecutedEvent, new RoutedEventHandler(CommandExecuted), true);
         }
-
-        //private List<Change> Matches(string wrong, string right)
-        //{
-        //    var changes = new List<Change>();
-
-        //    for (var i = 0; i < wrong.Length; i++)
-        //    {
-        //        for (var j = 0; j < right.Length; j++)
-        //        {
-                    
-        //        }
-        //    }
-
-        //    return changes;
-        //}
 
         private void CommandExecuted(object sender, RoutedEventArgs e)
         {
