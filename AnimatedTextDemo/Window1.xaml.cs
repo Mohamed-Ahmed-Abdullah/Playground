@@ -28,7 +28,7 @@ namespace AnimatedTextDemo
             spellCheckContextMenu = new ContextMenu();
             mATextBox.ContextMenu = spellCheckContextMenu;
 
-            mohamedAhmed.Loaded += mohamedAhmed_Loaded;
+            //mohamedAhmed.Loaded += mohamedAhmed_Loaded;
             mATextBox.ContextMenuOpening += tb_ContextMenuOpening;
             mATextBox.AddHandler(CommandManager.ExecutedEvent, new RoutedEventHandler(CommandExecuted), true);
         }
@@ -209,7 +209,6 @@ namespace AnimatedTextDemo
         private string _rightWord = "";
         private int _wrongWordStarts = -1;
         private int _wrongWordLength = -1;
-
         private void tb_ContextMenuOpening(object sender, RoutedEventArgs e)
         {
             spellCheckContextMenu.Items.Clear();
@@ -298,11 +297,11 @@ namespace AnimatedTextDemo
         //    Swap(5, 8);
         //}
 
-        void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
-        {
-            //DoIt();
-            //AnimateIt(null);
-        }
+        //void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    //DoIt();
+        //    //AnimateIt(null);
+        //}
 
         private void Remove(int index)
         {

@@ -18,11 +18,19 @@ namespace AnimatedTextDemo
                 {
                     var matches = new List<string>();
                     var subStringToMatch = wrong.Substring(i, 1);
-                    for (var j = 0; j < wrong.Length; j++)
+                    for (var j = 1; j < wrong.Length; j++)
                     {
-                        if (right.IndexOf(subStringToMatch,i) != -1)
+                        if (right.IndexOf(subStringToMatch) != -1)
                         {
-                            matches.Add(subStringToMatch);
+                            //if it's one char it should be in the same index
+                            if (subStringToMatch.Count() == 1)
+                            {
+                                if (right.IndexOf(subStringToMatch, i) == wrong.IndexOf(subStringToMatch, i))
+                                    matches.Add(subStringToMatch);
+                            }
+                            else
+                                matches.Add(subStringToMatch);
+
                             try { subStringToMatch = wrong.Substring(i , j + 1); }
                             catch (Exception) { break; }
                         }
@@ -35,14 +43,14 @@ namespace AnimatedTextDemo
             }
 
             //filter globalMatches
-            foreach (var match in globalMatches.ToList())
-            {
-                //2th indexof there leave it
-                if (globalMatches.Where(w => w != match).
-                    Any(a => match.Text.Length < 2 //hacky solution to solve a bug
-                    || (a.Text.Contains(match.Text) && right.IndexOfNth(match.Text, 0, 2) == -1)) ) //the same hacky solution
-                    globalMatches.Remove(match);
-            }
+            //foreach (var match in globalMatches.ToList())
+            //{
+            //    //2th indexof there leave it
+            //    if (globalMatches.Where(w => w != match).
+            //        Any(a => match.Text.Length < 2 //hacky solution to solve a bug
+            //        || (a.Text.Contains(match.Text) && right.IndexOfNth(match.Text, 0, 2) == -1)) ) //the same hacky solution
+            //        globalMatches.Remove(match);
+            //}
             var stringGlobalMatches = globalMatches.Select(s => s.Text).ToList();
 
             //if there is no 2char matche lets find 1char match
