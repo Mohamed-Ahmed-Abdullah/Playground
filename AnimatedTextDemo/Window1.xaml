@@ -22,6 +22,9 @@
 
         <DoubleAnimation x:Key="AnimationScale" Storyboard.TargetName="mohamedAhmed"                
                          To="0.0" Duration="0:0:.009" />
+        
+        <DoubleAnimation x:Key="AnimationScale2" Storyboard.TargetName="mohamedAhmed"                
+                         To="0.0" Duration="0:0:.009" />
 
         <DoubleAnimation x:Key="CharacterRotationAnimation" x:Shared="False" 
                          To="360" AccelerationRatio="0.5" 
@@ -53,7 +56,7 @@
                    Foreground="Yellow" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
                    FontSize="50" Margin="3,1,0,0"/>
 
-        <TextBox x:Name="mATextBox" Text="Ahmed requir haed Abdullah Mohamed" HorizontalAlignment="Stretch" 
+        <TextBox x:Name="mATextBox" Text="Ahmed heaf requir haed Abdullah Mohamed" HorizontalAlignment="Stretch" 
                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Opacity=".7"  FontSize="50"
                  Foreground="White" Background="Transparent" BorderBrush="{x:Null}" SpellCheck.IsEnabled="True" />
     </Grid>

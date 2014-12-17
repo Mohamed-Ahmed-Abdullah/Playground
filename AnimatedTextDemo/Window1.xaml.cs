@@ -53,13 +53,6 @@ namespace AnimatedTextDemo
                     ).ToArray();
                 mATextBox.Text = new string(first.Concat(spaces).Concat(second).ToArray());
 
-
-                Debug.WriteLine("And Let The Animation begins");
-                Debug.WriteLine("_rightWord=" + _rightWord);
-                Debug.WriteLine("_wrongWord=" + _wrongWord);
-                Debug.WriteLine("_wrongWordStarts=" + _wrongWordStarts);
-                Debug.WriteLine("_wrongWordLength=" + _wrongWordLength);
-                Debug.WriteLine("width=" + MeasureString(_wrongWord).Width);
                 var changesFider = new ChangesFinder();
                 var changes = changesFider.Find(_wrongWord, _rightWord);
                 var animationString = CreateAnimatedString(_wrongWord, _rightWord, changes);
@@ -82,8 +75,10 @@ namespace AnimatedTextDemo
         {
             if (changes.Any(a => a.ChangeType == ChangeType.Insert))
                 return right;
-            
-            return wrong;
+
+            return changes
+                .Where(change => change.ChangeType == ChangeType.Replace)
+                .Aggregate(right, (current, change) => current.Insert(change.Index, change.Character + ""));
         }
 
         public void PrepareTextEffect(List<Change> changes)
@@ -105,13 +100,6 @@ namespace AnimatedTextDemo
             }
 
             //folding for the replace 
-
-        }
-
-        public async Task AnimateIt(List<Change> changes,Action done)
-        {
-            PrepareTextEffect(changes);            
-
             foreach (var change in changes)
             {
                 switch (change.ChangeType)
@@ -132,36 +120,88 @@ namespace AnimatedTextDemo
                         var animation = FindResource("AnimationScale") as DoubleAnimation;
                         animation.To = 0;
                         animation.Duration = TimeSpan.FromSeconds(0);
-                        Storyboard.SetTargetProperty(animation,
-                            new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
+                        Storyboard.SetTargetProperty(animation, new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
                         initStoryboard.Children.Add(animation);
                         initStoryboard.Begin(this);
-                        await Task.Delay(1000);
+                    }break;
+                    case ChangeType.Remove:
+                    {
+                    }break;
+                    case ChangeType.Swap:
+                    {
+                    }break;
+                    case ChangeType.Replace:
+                    {
+                        var initStoryboard = new Storyboard();
+                        var index = _wrongWordStarts + change.Index+1;
+                        //move to far place on top 
+                        var anim = FindResource("CharacterMoveAnimation") as DoubleAnimation;
+                        anim.To = -40; //it comes from top to center
+                        anim.Duration = TimeSpan.FromSeconds(0);
+                        Storyboard.SetTargetProperty(anim, new PropertyPath(
+                            String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
+                        initStoryboard.Children.Add(anim);
 
+                        //to left 
+                        //TODO move all chars to left 
+                        var animationToLeft = FindResource("CharacterLeftAnimation") as DoubleAnimation;
+                        animationToLeft.To = (mohamedAhmed.FontSize / 2) * -1;
+                        animationToLeft.Duration = TimeSpan.FromSeconds(0);
+                        Storyboard.SetTargetProperty(animationToLeft, new PropertyPath(
+                            String.Format("TextEffects[{0}].Transform.Children[0].X", index)));
+                        initStoryboard.Children.Add(animationToLeft);
+
+                        //disapear
+                        var animation = FindResource("AnimationScale") as DoubleAnimation;
+                        animation.To = 0;
+                        animation.Duration = TimeSpan.FromSeconds(0);
+                        Storyboard.SetTargetProperty(animation, new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
+                        initStoryboard.Children.Add(animation);
+                        initStoryboard.Begin(this);
+                    }break;
+                }
+            }
+        }
+
+        public async Task AnimateIt(List<Change> changes,Action done)
+        {
+            PrepareTextEffect(changes);            
+            
+            foreach (var change in changes)
+            {
+                switch (change.ChangeType)
+                {
+                    case ChangeType.Insert:
+                    {
+                        var index = _wrongWordStarts + change.Index;
+                        await Task.Delay(1000);
                         Insert(index);
                     }
                         break;
                     case ChangeType.Remove:
                     {
-                        await Task.Delay(1100);
+                        await Task.Delay(1000);
                         Remove(_wrongWordStarts + change.Index);
                     }
                     break;
                     case ChangeType.Swap:
                     {
-                        await Task.Delay(1100);
+                        await Task.Delay(1000);
                         Swap(_wrongWordStarts + change.Index, _wrongWordStarts + change.Index2.Value);
                     }
                     break;
                     case ChangeType.Replace:
                     {
-                        await Task.Delay(1100);
+                        await Task.Delay(500);
+                        var newIndex = _wrongWordStarts + change.Index + 1;
+                        var oldIndex = _wrongWordStarts + change.Index;
+                        Replace(newIndex, oldIndex);
+                        await Task.Delay(500);
                     }
                     break;
                 }
-                await Task.Delay(500);
+                await Task.Delay(1000);
             }
-            //await Task.Delay(500);
             done();
         }
 
@@ -246,17 +286,17 @@ namespace AnimatedTextDemo
             return new Size(formattedText.Width, formattedText.Height);
         }
 
-        public async Task DoIt()
-        {
-            await Task.Delay(1100);
-            Remove(1);
-            //await Task.Delay(1100);
-            //Right(1, 2);
-            //await Task.Delay(1100);
-            //Left(3, 4);
-            await Task.Delay(1100);
-            Swap(5, 8);
-        }
+        //private async Task DoIt()
+        //{
+        //    await Task.Delay(1100);
+        //    Remove(1);
+        //    //await Task.Delay(1100);
+        //    //Right(1, 2);
+        //    //await Task.Delay(1100);
+        //    //Left(3, 4);
+        //    await Task.Delay(1100);
+        //    Swap(5, 8);
+        //}
 
         void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
         {
@@ -264,7 +304,7 @@ namespace AnimatedTextDemo
             //AnimateIt(null);
         }
 
-        public void Remove(int index)
+        private void Remove(int index)
         {
             var storyBoard = new Storyboard();
 
@@ -292,7 +332,7 @@ namespace AnimatedTextDemo
             storyBoard.Begin(this);
         }
 
-        public void Insert(int index)
+        private void Insert(int index)
         {
             var storyboard = new Storyboard();
 
@@ -323,7 +363,59 @@ namespace AnimatedTextDemo
             storyboard.Begin(this);
         }
 
-        public void Swap(int index1,int index2)
+        private void Replace(int newIndex, int oldIndex)
+        {
+            var storyboard = new Storyboard();
+            //appear
+            var animation = FindResource("AnimationScale") as DoubleAnimation;
+            animation.To = 1;
+            animation.Duration = TimeSpan.FromSeconds(0);
+            Storyboard.SetTargetProperty(animation,
+                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", newIndex)));
+            storyboard.Children.Add(animation);
+
+            //color animation new green
+            var solidColorBrush = new SolidColorBrush();
+            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
+                FindResource("ColorAnimationGreen") as ColorAnimation);
+            var textEffect = mohamedAhmed.TextEffects[newIndex];
+            textEffect.Foreground = solidColorBrush;
+
+            //color animation old red
+            var solidColorBrushRed = new SolidColorBrush();
+            solidColorBrushRed.BeginAnimation(SolidColorBrush.ColorProperty,
+                FindResource("ColorAnimationRed") as ColorAnimation);
+            var textEffectOld = mohamedAhmed.TextEffects[oldIndex];
+            textEffectOld.Foreground = solidColorBrushRed;
+
+            //move down old char
+            var animationOld = FindResource("CharacterMoveAnimation") as DoubleAnimation;
+            animationOld.To = 0; //it comes from top to center
+            //storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
+            Storyboard.SetTargetProperty(animationOld, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", newIndex)));
+            storyboard.Children.Add(animationOld);
+
+            //move down new char
+            var animationNew = FindResource("CharacterMoveAnimation") as DoubleAnimation;
+            animationNew.To = 40; //it comes from top to center
+            Storyboard.SetTargetProperty(animationNew, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", oldIndex)));
+            storyboard.Children.Add(animationNew);
+
+            //Old Char disappear
+            var scaleAnimation = FindResource("AnimationScale2") as DoubleAnimation;
+            scaleAnimation.To = 0;
+            scaleAnimation.Duration = TimeSpan.FromSeconds(0);
+            scaleAnimation.BeginTime = TimeSpan.FromSeconds(.6);
+            Storyboard.SetTargetProperty(scaleAnimation,
+                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", oldIndex)));
+            storyboard.Children.Add(scaleAnimation);
+
+            storyboard.Begin(this);
+        }
+
+        private void Swap(int index1, int index2)
         {
             var storyBoard = new Storyboard();
             //move down
@@ -359,35 +451,6 @@ namespace AnimatedTextDemo
             storyBoard.Children.Add(toRight);
 
             storyBoard.Begin(this);
-        }
-
-        public void Left(int from, int to)
-        {
-            Move(from, to, true);
-        }
-
-        public void Right(int from, int to)
-        {
-            Move(from, to, false);
-        }
-
-        private void Move(int from, int to, bool isLeft)
-        {
-            var storyBoardWave = new Storyboard();
-            for (var i = 0; i <= to; ++i)
-            {
-                if (i < from || i > to) continue;
-
-                var anim = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-                anim.To = (mohamedAhmed.FontSize / 2) * (isLeft ? -1 : 1);
-                storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
-
-
-                Storyboard.SetTargetProperty(anim, new PropertyPath(
-                    String.Format("TextEffects[{0}].Transform.Children[0].X", i)));
-                storyBoardWave.Children.Add(anim);
-            }
-            storyBoardWave.Begin(this);
         }
     }
 }
