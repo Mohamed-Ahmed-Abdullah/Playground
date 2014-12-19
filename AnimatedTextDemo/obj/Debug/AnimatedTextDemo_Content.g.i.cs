@@ -8,6 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("requirments.txt")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/texgyreadventor-bold.otf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/texgyreadventor-bolditalic.otf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/texgyreadventor-italic.otf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/texgyreadventor-regular.otf")]
 
 

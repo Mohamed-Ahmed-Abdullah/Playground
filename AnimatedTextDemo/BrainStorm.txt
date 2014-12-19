@@ -23,3 +23,7 @@ ___________
 - inserted char should be in green and removed char should be in
 	red and the replacement should be in yellow 
 - 
+
+Bugs
+______
+- there is a bug in swap 

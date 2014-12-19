@@ -27,3 +27,8 @@ C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDe
 C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.g.resources
 C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.Properties.Resources.resources
 C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo.csproj.GenerateResource.Cache
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\Font\texgyreadventor-bold.otf
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\Font\texgyreadventor-bolditalic.otf
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\Font\texgyreadventor-italic.otf
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\bin\Debug\Font\texgyreadventor-regular.otf
+C:\Users\M\Documents\GitHub\Playground\AnimatedTextDemo\obj\Debug\AnimatedTextDemo_Content.g.cs
