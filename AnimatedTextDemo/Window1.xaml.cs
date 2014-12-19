@@ -27,8 +27,6 @@ namespace AnimatedTextDemo
             InitializeComponent();
             spellCheckContextMenu = new ContextMenu();
             mATextBox.ContextMenu = spellCheckContextMenu;
-
-            //mohamedAhmed.Loaded += mohamedAhmed_Loaded;
             mATextBox.ContextMenuOpening += tb_ContextMenuOpening;
             mATextBox.AddHandler(CommandManager.ExecutedEvent, new RoutedEventHandler(CommandExecuted), true);
         }
@@ -285,24 +283,6 @@ namespace AnimatedTextDemo
             return new Size(formattedText.Width, formattedText.Height);
         }
 
-        //private async Task DoIt()
-        //{
-        //    await Task.Delay(1100);
-        //    Remove(1);
-        //    //await Task.Delay(1100);
-        //    //Right(1, 2);
-        //    //await Task.Delay(1100);
-        //    //Left(3, 4);
-        //    await Task.Delay(1100);
-        //    Swap(5, 8);
-        //}
-
-        //void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    //DoIt();
-        //    //AnimateIt(null);
-        //}
-
         private void Remove(int index)
         {
             var storyBoard = new Storyboard();
@@ -310,7 +290,6 @@ namespace AnimatedTextDemo
             //color animation 
             var solidColorBrush = new SolidColorBrush();
             var colorAnimation = FindResource("ColorAnimationRed") as ColorAnimation;
-            //colorAnimation.Duration = TimeSpan.FromSeconds(.1);
             solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,colorAnimation);
             var textEffect = mohamedAhmed.TextEffects[index];
             textEffect.Foreground = solidColorBrush;
@@ -353,7 +332,6 @@ namespace AnimatedTextDemo
             //move down
             var anim = FindResource("CharacterMoveAnimation") as DoubleAnimation;
             anim.To = 0;//it comes from top to center
-            //storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
             Storyboard.SetTargetProperty(anim, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
             storyboard.Children.Add(anim);
@@ -390,7 +368,6 @@ namespace AnimatedTextDemo
             //move down old char
             var animationOld = FindResource("CharacterMoveAnimation") as DoubleAnimation;
             animationOld.To = 0; //it comes from top to center
-            //storyBoardWave.BeginTime = TimeSpan.FromSeconds(.5);
             Storyboard.SetTargetProperty(animationOld, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].Y", newIndex)));
             storyboard.Children.Add(animationOld);

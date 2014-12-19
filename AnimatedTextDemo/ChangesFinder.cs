@@ -14,56 +14,31 @@ namespace AnimatedTextDemo
 
             for (var i = 0; i < wrong.Length; i++)
             {
-                //if (i % 2 == 0)
+                var matches = new List<string>();
+                var subStringToMatch = wrong.Substring(i, 1);
+                for (var j = 1; j < wrong.Length; j++)
                 {
-                    var matches = new List<string>();
-                    var subStringToMatch = wrong.Substring(i, 1);
-                    for (var j = 1; j < wrong.Length; j++)
+                    if (right.IndexOf(subStringToMatch) != -1)
                     {
-                        if (right.IndexOf(subStringToMatch) != -1)
+                        //if it's one char it should be in the same index
+                        if (subStringToMatch.Count() == 1)
                         {
-                            //if it's one char it should be in the same index
-                            if (subStringToMatch.Count() == 1)
-                            {
-                                if (right.IndexOf(subStringToMatch, i) == wrong.IndexOf(subStringToMatch, i))
-                                    matches.Add(subStringToMatch);
-                            }
-                            else
+                            if (right.IndexOf(subStringToMatch, i) == wrong.IndexOf(subStringToMatch, i))
                                 matches.Add(subStringToMatch);
-
-                            try { subStringToMatch = wrong.Substring(i , j + 1); }
-                            catch (Exception) { break; }
                         }
                         else
-                            break;
+                            matches.Add(subStringToMatch);
+
+                        try { subStringToMatch = wrong.Substring(i, j + 1); }
+                        catch (Exception) { break; }
                     }
-                    if (matches.Any())
-                        globalMatches.Add(new StringObject { Text = matches[matches.Count - 1] });
+                    else
+                        break;
                 }
+                if (matches.Any())
+                    globalMatches.Add(new StringObject { Text = matches[matches.Count - 1] });
             }
-
-            //filter globalMatches
-            //foreach (var match in globalMatches.ToList())
-            //{
-            //    //2th indexof there leave it
-            //    if (globalMatches.Where(w => w != match).
-            //        Any(a => match.Text.Length < 2 //hacky solution to solve a bug
-            //        || (a.Text.Contains(match.Text) && right.IndexOfNth(match.Text, 0, 2) == -1)) ) //the same hacky solution
-            //        globalMatches.Remove(match);
-            //}
-            var stringGlobalMatches = globalMatches.Select(s => s.Text).ToList();
-
-            //if there is no 2char matche lets find 1char match
-            if (stringGlobalMatches.Count == 0)
-            {
-                //if there is any match chars in the same index this is a match 
-                var minLength = (wrong.Length < right.Length) ? wrong.Length : right.Length;
-                for (var i = 0; i < minLength; i++)
-                    if (wrong[i] == right[i])
-                        stringGlobalMatches.Add(wrong[i] + "");
-            }
-            //return new List<string> {"requ", "re"};
-            return stringGlobalMatches;
+            return globalMatches.Select(s => s.Text).ToList();
         }
 
         private List<Change> GetInsertions(string right, List<string> subMatches)
@@ -198,7 +173,6 @@ namespace AnimatedTextDemo
 
             return insert.Union(remove).Union(swaps).Union(replace).ToList();
         }
-
 
         private class StringObject
         {

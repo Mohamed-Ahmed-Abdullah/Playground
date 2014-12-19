@@ -9,8 +9,21 @@ namespace AnimatedTextUnitTest
     public class ChangesFinderUnitTest
     {
         private ChangesFinder _changesFinder = new ChangesFinder();
+
         [TestMethod]
-        public void Swap()
+        public void SwapStart()
+        {
+            var caseSwap = _changesFinder.Find("ehad", "head");
+            Assert.AreEqual(caseSwap.Count, 1);
+            Assert.AreEqual(caseSwap[0].ChangeType, ChangeType.Swap);
+            Assert.AreEqual(caseSwap[0].Character,'e');
+            Assert.AreEqual(caseSwap[0].Character2,'h');
+            Assert.AreEqual(caseSwap[0].Index, 0);
+            Assert.AreEqual(caseSwap[0].Index2, 1);
+        }
+
+        [TestMethod]
+        public void SwapMid()
         {
             var caseSwap = _changesFinder.Find("haed", "head");
             Assert.AreEqual(caseSwap.Count, 1);
@@ -19,6 +32,18 @@ namespace AnimatedTextUnitTest
             Assert.AreEqual(caseSwap[0].Character2,'e');
             Assert.AreEqual(caseSwap[0].Index, 1);
             Assert.AreEqual(caseSwap[0].Index2, 2);
+        }
+
+        [TestMethod]
+        public void SwapLast()
+        {
+            var caseSwap = _changesFinder.Find("heda", "head");
+            Assert.AreEqual(caseSwap.Count, 1);
+            Assert.AreEqual(caseSwap[0].ChangeType, ChangeType.Swap);
+            Assert.AreEqual(caseSwap[0].Character,'d');
+            Assert.AreEqual(caseSwap[0].Character2,'a');
+            Assert.AreEqual(caseSwap[0].Index, 2);
+            Assert.AreEqual(caseSwap[0].Index2, 3);
         }
 
         [TestMethod]
@@ -82,7 +107,29 @@ namespace AnimatedTextUnitTest
         }
 
         [TestMethod]
-        public void Replace()
+        public void ReplaceFirst()
+        {
+            var caseReplace = _changesFinder.Find("zead", "head");
+            Assert.AreEqual(caseReplace.Count, 1);
+            Assert.AreEqual(caseReplace[0].ChangeType, ChangeType.Replace);
+            Assert.AreEqual(caseReplace[0].Character, 'z');
+            Assert.AreEqual(caseReplace[0].Character2, 'h');
+            Assert.AreEqual(caseReplace[0].Index, 0);
+        }
+
+        [TestMethod]
+        public void ReplaceMid()
+        {
+            var caseReplace = _changesFinder.Find("requere", "require");
+            Assert.AreEqual(caseReplace.Count, 1);
+            Assert.AreEqual(caseReplace[0].ChangeType, ChangeType.Replace);
+            Assert.AreEqual(caseReplace[0].Character, 'e');
+            Assert.AreEqual(caseReplace[0].Character2, 'i');
+            Assert.AreEqual(caseReplace[0].Index, 4);
+        }
+
+        [TestMethod]
+        public void ReplaceLast()
         {            
             var caseReplace = _changesFinder.Find("heaf","head");
             Assert.AreEqual(caseReplace.Count, 1);
@@ -90,11 +137,6 @@ namespace AnimatedTextUnitTest
             Assert.AreEqual(caseReplace[0].Character, 'f');
             Assert.AreEqual(caseReplace[0].Character2, 'd');
             Assert.AreEqual(caseReplace[0].Index, 3);
-        }
-
-        [TestMethod]
-        public void Find()
-        { 
         }
     }
 }
