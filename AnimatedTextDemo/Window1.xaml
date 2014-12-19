@@ -57,13 +57,26 @@
     </Window.Resources>
 
     <Grid>
-        <TextBlock x:Name="mohamedAhmed"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2.33*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="1.5*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Image Source="/Images/word.png" Stretch="Uniform" Grid.ColumnSpan="3" Grid.RowSpan="3"></Image>
+        <TextBlock x:Name="mohamedAhmed" Grid.Column="1" Grid.Row="1"
                    FontFamily="/AnimatedTextDemo;component/Font/#TeX Gyre Adventor"
                    Foreground="Black" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
                    FontSize="50" Margin="3,1,0,0"/>
 
-        <TextBox x:Name="mATextBox" Text="Ahmed heaf requir haed Abdullah Mohamed" HorizontalAlignment="Stretch"
+        <TextBox x:Name="mATextBox" Grid.Column="1" Grid.Row="1"
+                 Text="Ahmed heaf requir haed Abdullah Mohamed" HorizontalAlignment="Stretch"
                   FontFamily="/AnimatedTextDemo;component/Font/#TeX Gyre Adventor"
+                 BorderBrush="Transparent" BorderThickness="0"
                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" FontSize="50"
                  Foreground="Black" Background="Transparent" SpellCheck.IsEnabled="True" />
     </Grid>
