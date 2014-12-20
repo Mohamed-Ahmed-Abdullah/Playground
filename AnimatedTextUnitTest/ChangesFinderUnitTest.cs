@@ -23,6 +23,18 @@ namespace AnimatedTextUnitTest
         }
 
         [TestMethod]
+        public void SwapFromFar()
+        {
+            var caseSwap = _changesFinder.Find("deah", "head");
+            Assert.AreEqual(caseSwap.Count, 1);
+            Assert.AreEqual(caseSwap[0].ChangeType, ChangeType.Swap);
+            Assert.AreEqual(caseSwap[0].Character,'e');
+            Assert.AreEqual(caseSwap[0].Character2,'h');
+            Assert.AreEqual(caseSwap[0].Index, 0);
+            Assert.AreEqual(caseSwap[0].Index2, 1);
+        }
+
+        [TestMethod]
         public void SwapMid()
         {
             var caseSwap = _changesFinder.Find("haed", "head");

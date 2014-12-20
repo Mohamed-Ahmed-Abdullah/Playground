@@ -12,13 +12,13 @@
                          RepeatBehavior="Forever" Storyboard.TargetName="textBlk" />
 
         <DoubleAnimation x:Key="CharacterWaveAnimation2" x:Shared="False" 
-                         To="40" Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
+                         To="40" Duration="0:0:0.2" Storyboard.TargetName="mohamedAhmed" />
 
         <DoubleAnimation x:Key="CharacterMoveAnimation" x:Shared="False" 
-                         To="-40" Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
+                         To="-40" Duration="0:0:0.2" Storyboard.TargetName="mohamedAhmed" />
 
         <DoubleAnimation x:Key="CharacterLeftAnimation" x:Shared="False" 
-                         Duration="0:0:0.5" Storyboard.TargetName="mohamedAhmed" />
+                         Duration="0:0:0.2" Storyboard.TargetName="mohamedAhmed" />
 
         <DoubleAnimation x:Key="AnimationScale" Storyboard.TargetName="mohamedAhmed"                
                          To="0.0" Duration="0:0:.009" />
@@ -73,8 +73,10 @@
                    Foreground="Black" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
                    FontSize="50" Margin="3,1,0,0"/>
 
+        <!-- Text="ehad haed heda equire requre requir zrequire reqzuire requirez zead requere heaf" -->
         <TextBox x:Name="mATextBox" Grid.Column="1" Grid.Row="1"
-                 Text="Ahmed heaf requir haed Abdullah Mohamed" HorizontalAlignment="Stretch"
+                 Text="requer"
+                 HorizontalAlignment="Stretch"
                   FontFamily="/AnimatedTextDemo;component/Font/#TeX Gyre Adventor"
                  BorderBrush="Transparent" BorderThickness="0"
                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" FontSize="50"

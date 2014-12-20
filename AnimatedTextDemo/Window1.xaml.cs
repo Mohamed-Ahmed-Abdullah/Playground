@@ -71,8 +71,14 @@ namespace AnimatedTextDemo
 
         public string CreateAnimatedString(string wrong, string right, List<Change> changes)
         {
+            if (changes.Any(a => a.ChangeType == ChangeType.Remove))
+                return wrong;
+
             if (changes.Any(a => a.ChangeType == ChangeType.Insert))
                 return right;
+
+            if (changes.Any(a => a.ChangeType == ChangeType.Swap))
+                return wrong;
 
             return changes
                 .Where(change => change.ChangeType == ChangeType.Replace)
@@ -172,19 +178,19 @@ namespace AnimatedTextDemo
                     case ChangeType.Insert:
                     {
                         var index = _wrongWordStarts + change.Index;
-                        await Task.Delay(1000);
+                        await Task.Delay(200);  
                         Insert(index);
                     }
                         break;
                     case ChangeType.Remove:
                     {
-                        await Task.Delay(1000);
+                        await Task.Delay(200);
                         Remove(_wrongWordStarts + change.Index);
                     }
                     break;
                     case ChangeType.Swap:
                     {
-                        await Task.Delay(1000);
+                        await Task.Delay(200);
                         Swap(_wrongWordStarts + change.Index, _wrongWordStarts + change.Index2.Value);
                     }
                     break;
@@ -194,7 +200,7 @@ namespace AnimatedTextDemo
                         var newIndex = _wrongWordStarts + change.Index + 1;
                         var oldIndex = _wrongWordStarts + change.Index;
                         Replace(newIndex, oldIndex);
-                        await Task.Delay(500);
+                        //await Task.Delay(500);
                     }
                     break;
                 }
@@ -281,6 +287,17 @@ namespace AnimatedTextDemo
                 mohamedAhmed.FontSize,
                 Brushes.Black);
             return new Size(formattedText.Width, formattedText.Height);
+        }
+
+        private double AverageCharWidth()
+        {
+            var widths = mohamedAhmed.Text
+                .Select(charachter => MeasureString(charachter + "").Width)
+                .Where(w => w > 0)
+                .ToList();
+
+            return widths.Sum() / widths.Count;
+            //return widths.Max();
         }
 
         private void Remove(int index)
@@ -404,9 +421,8 @@ namespace AnimatedTextDemo
             //move left
             var left = FindResource("CharacterLeftAnimation") as DoubleAnimation;
             var distance = Math.Abs(index1 - index2);
-                //fontsize /2 => in assumption that any distance between two chars is fontsize/2
-            left.To = (mohamedAhmed.FontSize / 2) * distance;
-            left.Duration = TimeSpan.FromSeconds(1);
+            left.To = AverageCharWidth()*distance;
+            left.Duration = TimeSpan.FromSeconds(0.2);
             Storyboard.SetTargetProperty(left, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].X", index1)));
             storyBoard.Children.Add(left);
@@ -420,8 +436,8 @@ namespace AnimatedTextDemo
 
             //move right
             var toRight = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-            toRight.To = (mohamedAhmed.FontSize / 2) * -distance;
-            toRight.Duration = TimeSpan.FromSeconds(1);
+            toRight.To = AverageCharWidth()*-distance;
+            toRight.Duration = TimeSpan.FromSeconds(0.2);
             Storyboard.SetTargetProperty(toRight, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].X", index2)));
             storyBoard.Children.Add(toRight);
