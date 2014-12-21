@@ -68,17 +68,19 @@
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
         <Image Source="/Images/word.png" Stretch="Uniform" Grid.ColumnSpan="3" Grid.RowSpan="3"></Image>
+        <!--   -->
         <TextBlock x:Name="mohamedAhmed" Grid.Column="1" Grid.Row="1"
+                   Text="{Binding ElementName=mATextBox,Path=Text,UpdateSourceTrigger=PropertyChanged}"
                    FontFamily="/AnimatedTextDemo;component/Font/#TeX Gyre Adventor"
-                   Foreground="Black" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
+                   Foreground="red" TextWrapping="Wrap" HorizontalAlignment="Stretch" 
                    FontSize="50" Margin="3,1,0,0"/>
 
-        <!-- Text="ehad haed heda equire requre requir zrequire reqzuire requirez zead requere heaf" -->
+        <!-- insert->remove  remove->swap swap->replace replace->insert -->
         <TextBox x:Name="mATextBox" Grid.Column="1" Grid.Row="1"
-                 Text="requer"
+                  Text="require require require require " 
                  HorizontalAlignment="Stretch"
                   FontFamily="/AnimatedTextDemo;component/Font/#TeX Gyre Adventor"
-                 BorderBrush="Transparent" BorderThickness="0"
+                 BorderBrush="Transparent" BorderThickness="0" Opacity="0"
                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" FontSize="50"
                  Foreground="Black" Background="Transparent" SpellCheck.IsEnabled="True" />
     </Grid>

@@ -1,19 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 
 namespace AnimatedTextDemo
@@ -28,7 +22,92 @@ namespace AnimatedTextDemo
             spellCheckContextMenu = new ContextMenu();
             mATextBox.ContextMenu = spellCheckContextMenu;
             mATextBox.ContextMenuOpening += tb_ContextMenuOpening;
+            mohamedAhmed.Loaded += mohamedAhmed_Loaded;
             mATextBox.AddHandler(CommandManager.ExecutedEvent, new RoutedEventHandler(CommandExecuted), true);
+        }
+
+        public void PrepareJustTextEffect()
+        {
+            //text effects 
+            mohamedAhmed.TextEffects = new TextEffectCollection();
+            for (var i = 0; i < mohamedAhmed.Text.Count(); i++)
+            {
+                var transGrp = new TransformGroup();
+                transGrp.Children.Add(new TranslateTransform());
+                transGrp.Children.Add(new ScaleTransform());
+
+                mohamedAhmed.TextEffects.Add(new TextEffect
+                {
+                    PositionStart = i,
+                    PositionCount = 1,
+                    Transform = transGrp,
+                });
+            }
+        }
+
+        public DoubleAnimation MoveVertically(double to, Duration duration, TimeSpan? timeSpan, int index)
+        {
+            var animation = FindResource("CharacterMoveAnimation") as DoubleAnimation;
+            animation.To = to; //it comes from top to center
+            animation.Duration = duration;
+            if (timeSpan != null)
+                animation.BeginTime = timeSpan;
+            Storyboard.SetTargetProperty(animation, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
+            return animation;
+        }
+
+        public DoubleAnimation Scale(double to, Duration duration, TimeSpan? timeSpan, int index)
+        {
+            var animation = FindResource("AnimationScale") as DoubleAnimation;
+            animation.To = to;
+            animation.Duration = duration;
+            if (timeSpan != null)
+                animation.BeginTime = timeSpan;
+            Storyboard.SetTargetProperty(animation,
+                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
+            return animation;
+        }
+
+        public void SetColor(int index,bool isGreen=true)
+        {
+            var solidColorBrush = new SolidColorBrush();
+            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
+                FindResource((isGreen ? "ColorAnimationGreen" : "ColorAnimationRed")) as ColorAnimation);
+            var textEffect = mohamedAhmed.TextEffects[index];
+            textEffect.Foreground = solidColorBrush;
+        }
+
+        void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
+        {
+            PrepareJustTextEffect();
+
+            //insert init Storyboard
+            var initStoryboard = new Storyboard();
+            var index = 0;
+            var noTime = TimeSpan.FromSeconds(0);
+            var timeLine = TimeSpan.FromSeconds(0);
+            var duration = TimeSpan.FromSeconds(.5);
+
+            initStoryboard.Children.Add(MoveVertically(-40, noTime, null, index));
+            initStoryboard.Children.Add(Scale(0, noTime, null, index));
+            SetColor(index);
+            initStoryboard.Children.Add(Scale(1, noTime, null, index));
+            timeLine += duration;
+            initStoryboard.Children.Add(MoveVertically(0, duration, null, index));
+            //initStoryboard.BeginTime = TimeSpan.FromSeconds(.5);
+
+            index = 1;
+            initStoryboard.Children.Add(MoveVertically(-40, noTime, null, index));
+            initStoryboard.Children.Add(Scale(0, noTime, null, index));
+            SetColor(index);
+            initStoryboard.Children.Add(Scale(1, noTime, null, index));
+            timeLine += duration;
+            initStoryboard.Children.Add(MoveVertically(0, duration, timeLine, index));
+
+            initStoryboard.BeginTime = TimeSpan.FromSeconds(1);
+
+            initStoryboard.Begin(this);
         }
 
         private void CommandExecuted(object sender, RoutedEventArgs e)
@@ -59,13 +138,9 @@ namespace AnimatedTextDemo
                 {
                     mohamedAhmed.Visibility = Visibility.Collapsed;
                     mATextBox.Visibility = Visibility.Visible;
+                    if (changes.Any(a => a.ChangeType == ChangeType.Remove))  _rightWord = _rightWord + " ";//hacky solution to solve a bug
                     mATextBox.Text = new string(first.Concat(_rightWord).Concat(second).ToArray());
                 });
-
-                foreach (var change in changes)
-                {
-                    Debug.WriteLine("[" + change.Index + "] " + change + " ");
-                }
             }
         }
 
@@ -296,8 +371,8 @@ namespace AnimatedTextDemo
                 .Where(w => w > 0)
                 .ToList();
 
-            return widths.Sum() / widths.Count;
-            //return widths.Max();
+            //return widths.Sum() / widths.Count;
+            return widths.Max();
         }
 
         private void Remove(int index)
