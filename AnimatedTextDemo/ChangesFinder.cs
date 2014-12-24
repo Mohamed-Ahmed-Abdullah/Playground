@@ -170,8 +170,25 @@ namespace AnimatedTextDemo
                 }
             }
 
+            var all = insert.Union(remove).Union(swaps).Union(replace).ToList();
+            //hack solution for resolving wierd bug (replace for the same char)
+            foreach (var change in all.ToList()
+                .Where(change => 
+                    change.ChangeType == ChangeType.Replace 
+                    && change.Character == change.Character2))
+            {
+                all.Remove(change);
+            }
 
-            return insert.Union(remove).Union(swaps).Union(replace).ToList();
+            //if there is more than one replace and the chars is swapping it should be merged to one swap 
+            if (all.Count(w => w.ChangeType == ChangeType.Replace) >= 2)
+            {
+                foreach (var change in all.Where(w=>w.ChangeType == ChangeType.Replace))
+                {
+                    
+                }
+            }
+            return all;
         }
 
         private class StringObject

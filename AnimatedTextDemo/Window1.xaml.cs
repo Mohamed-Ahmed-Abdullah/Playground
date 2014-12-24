@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,48 +23,52 @@ namespace AnimatedTextDemo
             spellCheckContextMenu = new ContextMenu();
             mATextBox.ContextMenu = spellCheckContextMenu;
             mATextBox.ContextMenuOpening += tb_ContextMenuOpening;
-            mohamedAhmed.Loaded += mohamedAhmed_Loaded;
+            //mohamedAhmed.Loaded += mohamedAhmed_Loaded;
             mATextBox.AddHandler(CommandManager.ExecutedEvent, new RoutedEventHandler(CommandExecuted), true);
         }
 
-        public void PrepareJustTextEffect()
+        #region Animation Core
+        public DoubleAnimation GetDoubleAnimation()
         {
-            //text effects 
-            mohamedAhmed.TextEffects = new TextEffectCollection();
-            for (var i = 0; i < mohamedAhmed.Text.Count(); i++)
-            {
-                var transGrp = new TransformGroup();
-                transGrp.Children.Add(new TranslateTransform());
-                transGrp.Children.Add(new ScaleTransform());
-
-                mohamedAhmed.TextEffects.Add(new TextEffect
-                {
-                    PositionStart = i,
-                    PositionCount = 1,
-                    Transform = transGrp,
-                });
-            }
+            var doubleAnimation = new DoubleAnimation();
+            doubleAnimation.SetValue(Storyboard.TargetNameProperty,mohamedAhmed.Name);
+            return doubleAnimation;
         }
 
-        public DoubleAnimation MoveVertically(double to, Duration duration, TimeSpan? timeSpan, int index)
+        public DoubleAnimation MoveVertically(double to, Duration duration, TimeSpan? timeSpan, int index, bool autoReverse =false)
         {
-            var animation = FindResource("CharacterMoveAnimation") as DoubleAnimation;
+            var animation = GetDoubleAnimation();//FindResource("CharacterMoveAnimation") as DoubleAnimation;
             animation.To = to; //it comes from top to center
             animation.Duration = duration;
             if (timeSpan != null)
                 animation.BeginTime = timeSpan;
+            animation.AutoReverse = autoReverse;
             Storyboard.SetTargetProperty(animation, new PropertyPath(
                 String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
             return animation;
         }
 
-        public DoubleAnimation Scale(double to, Duration duration, TimeSpan? timeSpan, int index)
+        public DoubleAnimation MoveHorizontally(double to, Duration duration, TimeSpan? timeSpan, int index, bool autoReverse = false)
         {
-            var animation = FindResource("AnimationScale") as DoubleAnimation;
-            animation.To = to;
+            var animation = GetDoubleAnimation();//FindResource("CharacterMoveAnimation") as DoubleAnimation;
+            animation.To = to; //it comes from top to center
             animation.Duration = duration;
             if (timeSpan != null)
                 animation.BeginTime = timeSpan;
+            animation.AutoReverse = autoReverse;
+            Storyboard.SetTargetProperty(animation, new PropertyPath(
+                String.Format("TextEffects[{0}].Transform.Children[0].X", index)));
+            return animation;
+        }
+
+        public DoubleAnimation Scale(double to, Duration duration, TimeSpan? beginTime, int index, bool autoReverse = false)
+        {
+            var animation = GetDoubleAnimation();
+            animation.To = to;
+            animation.Duration = duration;
+            if (beginTime != null)
+                animation.BeginTime = beginTime;
+            animation.AutoReverse = autoReverse;
             Storyboard.SetTargetProperty(animation,
                 new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
             return animation;
@@ -77,6 +82,7 @@ namespace AnimatedTextDemo
             var textEffect = mohamedAhmed.TextEffects[index];
             textEffect.Foreground = solidColorBrush;
         }
+        #endregion
 
         void mohamedAhmed_Loaded(object sender, RoutedEventArgs e)
         {
@@ -89,6 +95,7 @@ namespace AnimatedTextDemo
             var timeLine = TimeSpan.FromSeconds(0);
             var duration = TimeSpan.FromSeconds(.5);
 
+            //init
             initStoryboard.Children.Add(MoveVertically(-40, noTime, null, index));
             initStoryboard.Children.Add(Scale(0, noTime, null, index));
             SetColor(index);
@@ -98,11 +105,11 @@ namespace AnimatedTextDemo
             //initStoryboard.BeginTime = TimeSpan.FromSeconds(.5);
 
             index = 1;
+            timeLine += duration;
             initStoryboard.Children.Add(MoveVertically(-40, noTime, null, index));
             initStoryboard.Children.Add(Scale(0, noTime, null, index));
             SetColor(index);
-            initStoryboard.Children.Add(Scale(1, noTime, null, index));
-            timeLine += duration;
+            initStoryboard.Children.Add(Scale(1, noTime, timeLine, index));
             initStoryboard.Children.Add(MoveVertically(0, duration, timeLine, index));
 
             initStoryboard.BeginTime = TimeSpan.FromSeconds(1);
@@ -146,18 +153,46 @@ namespace AnimatedTextDemo
 
         public string CreateAnimatedString(string wrong, string right, List<Change> changes)
         {
-            if (changes.Any(a => a.ChangeType == ChangeType.Remove))
-                return wrong;
+            var word = wrong;
+            foreach (var change in changes)
+            {
+                switch (change.ChangeType)
+                {
+                    case ChangeType.Insert:
+                    {
+                        word = word.Insert(change.Index, change.Character + "");
+                        //when you insert a charahter the indexes will be effected so you need to push them
+                        changes.Skip(changes.IndexOf(change) + 1).ToList().ForEach(f =>
+                        {
+                            f.Index++;
+                            if (f.Index2.HasValue)
+                                f.Index2++;
+                        });
+                    }
+                    break;
+                    case ChangeType.Remove:
+                    //leav the char in there cuz the animation will take it out
+                    break;
+                    case ChangeType.Swap:
+                    //leav them unswaped cuz the animation will do it 
+                    break;
+                    case ChangeType.Replace:
+                    {
+                        //put the new char next to the old one 
+                        word = word.Insert(change.Index2.Value, change.Character2 + "");
+                        //when you insert a charahter the indexes will be effected so you need to push them
+                        changes.Skip(changes.IndexOf(change) + 1).ToList().ForEach(f =>
+                        {
+                            f.Index++;
+                            if (f.Index2.HasValue)
+                                f.Index2++;
+                        });
 
-            if (changes.Any(a => a.ChangeType == ChangeType.Insert))
-                return right;
-
-            if (changes.Any(a => a.ChangeType == ChangeType.Swap))
-                return wrong;
-
-            return changes
-                .Where(change => change.ChangeType == ChangeType.Replace)
-                .Aggregate(right, (current, change) => current.Insert(change.Index, change.Character + ""));
+                    }
+                    break;
+                }
+            }
+            return word;
         }
 
         public void PrepareTextEffect(List<Change> changes)
@@ -177,110 +212,66 @@ namespace AnimatedTextDemo
                     Transform = transGrp,
                 });
             }
+        }
 
-            //folding for the replace 
-            foreach (var change in changes)
+        public void PrepareJustTextEffect()
+        {
+            //text effects 
+            mohamedAhmed.TextEffects = new TextEffectCollection();
+            for (var i = 0; i < mohamedAhmed.Text.Count(); i++)
             {
-                switch (change.ChangeType)
+                var transGrp = new TransformGroup();
+                transGrp.Children.Add(new TranslateTransform());
+                transGrp.Children.Add(new ScaleTransform());
+
+                mohamedAhmed.TextEffects.Add(new TextEffect
                 {
-                    case ChangeType.Insert:
-                    {
-                        //insert init Storyboard
-                        var initStoryboard = new Storyboard();
-                        var index = _wrongWordStarts + change.Index;
-                        //move to far place on top 
-                        var anim = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-                        anim.To = -40; //it comes from top to center
-                        anim.Duration = TimeSpan.FromSeconds(0);
-                        Storyboard.SetTargetProperty(anim, new PropertyPath(
-                            String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
-                        initStoryboard.Children.Add(anim);
-                        //disapear
-                        var animation = FindResource("AnimationScale") as DoubleAnimation;
-                        animation.To = 0;
-                        animation.Duration = TimeSpan.FromSeconds(0);
-                        Storyboard.SetTargetProperty(animation, new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
-                        initStoryboard.Children.Add(animation);
-                        initStoryboard.Begin(this);
-                    }break;
-                    case ChangeType.Remove:
-                    {
-                    }break;
-                    case ChangeType.Swap:
-                    {
-                    }break;
-                    case ChangeType.Replace:
-                    {
-                        var initStoryboard = new Storyboard();
-                        var index = _wrongWordStarts + change.Index+1;
-                        //move to far place on top 
-                        var anim = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-                        anim.To = -40; //it comes from top to center
-                        anim.Duration = TimeSpan.FromSeconds(0);
-                        Storyboard.SetTargetProperty(anim, new PropertyPath(
-                            String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
-                        initStoryboard.Children.Add(anim);
-
-                        //to left 
-                        //TODO move all chars to left 
-                        var animationToLeft = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-                        animationToLeft.To = (mohamedAhmed.FontSize / 2) * -1;
-                        animationToLeft.Duration = TimeSpan.FromSeconds(0);
-                        Storyboard.SetTargetProperty(animationToLeft, new PropertyPath(
-                            String.Format("TextEffects[{0}].Transform.Children[0].X", index)));
-                        initStoryboard.Children.Add(animationToLeft);
-
-                        //disapear
-                        var animation = FindResource("AnimationScale") as DoubleAnimation;
-                        animation.To = 0;
-                        animation.Duration = TimeSpan.FromSeconds(0);
-                        Storyboard.SetTargetProperty(animation, new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
-                        initStoryboard.Children.Add(animation);
-                        initStoryboard.Begin(this);
-                    }break;
-                }
+                    PositionStart = i,
+                    PositionCount = 1,
+                    Transform = transGrp,
+                });
             }
         }
 
         public async Task AnimateIt(List<Change> changes,Action done)
         {
-            PrepareTextEffect(changes);            
-            
+            PrepareTextEffect(changes);
+
+            var storyboard = new Storyboard();
+            var timeLine = TimeSpan.FromSeconds(0);
+            var duration = TimeSpan.FromSeconds(0.5);
+
             foreach (var change in changes)
             {
                 switch (change.ChangeType)
                 {
                     case ChangeType.Insert:
                     {
-                        var index = _wrongWordStarts + change.Index;
-                        await Task.Delay(200);  
-                        Insert(index);
+                        timeLine += Insert(_wrongWordStarts + change.Index, storyboard, timeLine, duration);
                     }
                         break;
                     case ChangeType.Remove:
                     {
-                        await Task.Delay(200);
-                        Remove(_wrongWordStarts + change.Index);
+                        timeLine += Remove(_wrongWordStarts + change.Index, storyboard, timeLine, duration);
                     }
                     break;
                     case ChangeType.Swap:
                     {
-                        await Task.Delay(200);
-                        Swap(_wrongWordStarts + change.Index, _wrongWordStarts + change.Index2.Value);
+                        timeLine += Swap(_wrongWordStarts + change.Index, _wrongWordStarts + change.Index2.Value, storyboard, timeLine, duration);
                     }
                     break;
                     case ChangeType.Replace:
                     {
-                        await Task.Delay(500);
                         var newIndex = _wrongWordStarts + change.Index + 1;
                         var oldIndex = _wrongWordStarts + change.Index;
-                        Replace(newIndex, oldIndex);
-                        //await Task.Delay(500);
+                        timeLine += Replace(newIndex, oldIndex, storyboard, timeLine, duration);
                     }
                     break;
                 }
-                await Task.Delay(1000);
+                timeLine += duration;
             }
+            storyboard.Begin(this);
+            await Task.Delay(timeLine + (duration+duration) );
             done();
         }
 
@@ -288,6 +279,7 @@ namespace AnimatedTextDemo
         private string _rightWord = "";
         private int _wrongWordStarts = -1;
         private int _wrongWordLength = -1;
+        readonly TimeSpan _noTime = TimeSpan.FromSeconds(0);
         private void tb_ContextMenuOpening(object sender, RoutedEventArgs e)
         {
             spellCheckContextMenu.Items.Clear();
@@ -371,153 +363,60 @@ namespace AnimatedTextDemo
                 .Where(w => w > 0)
                 .ToList();
 
-            //return widths.Sum() / widths.Count;
-            return widths.Max();
+            return widths.Sum() / widths.Count;
+            //return widths.Max();
         }
 
-        private void Remove(int index)
+        private TimeSpan Remove(int index, Storyboard storyboard, TimeSpan timeLine, TimeSpan duration)
         {
-            var storyBoard = new Storyboard();
-
-            //color animation 
-            var solidColorBrush = new SolidColorBrush();
-            var colorAnimation = FindResource("ColorAnimationRed") as ColorAnimation;
-            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,colorAnimation);
-            var textEffect = mohamedAhmed.TextEffects[index];
-            textEffect.Foreground = solidColorBrush;
-
-            //move down
-            var anim = FindResource("CharacterWaveAnimation2") as DoubleAnimation;
-            Storyboard.SetTargetProperty(anim, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
-            storyBoard.Children.Add(anim);
-
-            //disapear
-            var animation = FindResource("AnimationScale") as DoubleAnimation;
-            animation.BeginTime = TimeSpan.FromSeconds(.5);
-            Storyboard.SetTargetProperty(animation,
-                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
-            storyBoard.Children.Add(animation);
-
-            storyBoard.Begin(this);
+            SetColor(index,false);
+            storyboard.Children.Add(MoveVertically(40,duration,timeLine,index));
+            timeLine += duration;
+            storyboard.Children.Add(Scale(0,_noTime,timeLine,index));
+            return timeLine;
         }
 
-        private void Insert(int index)
+        private TimeSpan Insert(int index, Storyboard storyboard,TimeSpan timeLine,TimeSpan duration)
         {
-            var storyboard = new Storyboard();
-
-            //appear
-            var animation = FindResource("AnimationScale") as DoubleAnimation;
-            animation.To = 1;
-            animation.Duration = TimeSpan.FromSeconds(0);
-            Storyboard.SetTargetProperty(animation,
-                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", index)));
-            storyboard.Children.Add(animation);
-
-            //color animation 
-            var solidColorBrush = new SolidColorBrush();
-            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
-                FindResource("ColorAnimationGreen") as ColorAnimation);
-            var textEffect = mohamedAhmed.TextEffects[index];
-            textEffect.Foreground = solidColorBrush;
-
-            //move down
-            var anim = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-            anim.To = 0;//it comes from top to center
-            Storyboard.SetTargetProperty(anim, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].Y", index)));
-            storyboard.Children.Add(anim);
-
-            storyboard.BeginTime = TimeSpan.FromSeconds(.5);
-            storyboard.Begin(this);
+            timeLine += duration;
+            storyboard.Children.Add(MoveVertically(-40, _noTime, null, index));
+            storyboard.Children.Add(Scale(0, _noTime, null, index));
+            SetColor(index);
+            storyboard.Children.Add(Scale(1, _noTime, timeLine, index));
+            storyboard.Children.Add(MoveVertically(0, duration, timeLine, index));
+            return timeLine;
         }
 
-        private void Replace(int newIndex, int oldIndex)
+        private TimeSpan Replace(int newIndex, int oldIndex, Storyboard storyboard, TimeSpan timeLine, TimeSpan duration)
         {
-            var storyboard = new Storyboard();
-            //appear
-            var animation = FindResource("AnimationScale") as DoubleAnimation;
-            animation.To = 1;
-            animation.Duration = TimeSpan.FromSeconds(0);
-            Storyboard.SetTargetProperty(animation,
-                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", newIndex)));
-            storyboard.Children.Add(animation);
+            SetColor(newIndex);
+            SetColor(oldIndex,false);
 
-            //color animation new green
-            var solidColorBrush = new SolidColorBrush();
-            solidColorBrush.BeginAnimation(SolidColorBrush.ColorProperty,
-                FindResource("ColorAnimationGreen") as ColorAnimation);
-            var textEffect = mohamedAhmed.TextEffects[newIndex];
-            textEffect.Foreground = solidColorBrush;
+            storyboard.Children.Add(MoveVertically(-AverageCharWidth(), _noTime, _noTime, newIndex));
+            storyboard.Children.Add(Scale(0, _noTime, _noTime, newIndex));
+            storyboard.Children.Add(MoveHorizontally(-AverageCharWidth(), _noTime, _noTime, newIndex));
 
-            //color animation old red
-            var solidColorBrushRed = new SolidColorBrush();
-            solidColorBrushRed.BeginAnimation(SolidColorBrush.ColorProperty,
-                FindResource("ColorAnimationRed") as ColorAnimation);
-            var textEffectOld = mohamedAhmed.TextEffects[oldIndex];
-            textEffectOld.Foreground = solidColorBrushRed;
+            timeLine += duration;
 
-            //move down old char
-            var animationOld = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-            animationOld.To = 0; //it comes from top to center
-            Storyboard.SetTargetProperty(animationOld, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].Y", newIndex)));
-            storyboard.Children.Add(animationOld);
+            storyboard.Children.Add(Scale(1, _noTime, timeLine, newIndex));
+            storyboard.Children.Add(MoveVertically(0, duration, timeLine, newIndex));
+            storyboard.Children.Add(MoveVertically(AverageCharWidth(), duration, timeLine, oldIndex));
 
-            //move down new char
-            var animationNew = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-            animationNew.To = 40; //it comes from top to center
-            Storyboard.SetTargetProperty(animationNew, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].Y", oldIndex)));
-            storyboard.Children.Add(animationNew);
-
-            //Old Char disappear
-            var scaleAnimation = FindResource("AnimationScale2") as DoubleAnimation;
-            scaleAnimation.To = 0;
-            scaleAnimation.Duration = TimeSpan.FromSeconds(0);
-            scaleAnimation.BeginTime = TimeSpan.FromSeconds(.6);
-            Storyboard.SetTargetProperty(scaleAnimation,
-                new PropertyPath(String.Format("TextEffects[{0}].Transform.Children[1].ScaleX", oldIndex)));
-            storyboard.Children.Add(scaleAnimation);
-
-            storyboard.Begin(this);
+            return timeLine;
         }
 
-        private void Swap(int index1, int index2)
+        private TimeSpan Swap(int index1, int index2, Storyboard storyboard, TimeSpan timeLine, TimeSpan duration)
         {
-            var storyBoard = new Storyboard();
-            //move down
-            var up = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-            Storyboard.SetTargetProperty(up, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].Y", index1)));
-            up.AutoReverse = true;
-            storyBoard.Children.Add(up);
+            timeLine += duration;
 
-            //move left
-            var left = FindResource("CharacterLeftAnimation") as DoubleAnimation;
+            storyboard.Children.Add(MoveVertically(-AverageCharWidth(),duration,timeLine,index1,true));
+            storyboard.Children.Add(MoveVertically(-AverageCharWidth(),duration,timeLine,index2,true));
             var distance = Math.Abs(index1 - index2);
-            left.To = AverageCharWidth()*distance;
-            left.Duration = TimeSpan.FromSeconds(0.2);
-            Storyboard.SetTargetProperty(left, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].X", index1)));
-            storyBoard.Children.Add(left);
+            var to = AverageCharWidth() * distance;
+            storyboard.Children.Add(MoveHorizontally(to, duration, timeLine, index1));
+            storyboard.Children.Add(MoveHorizontally(-to, duration, timeLine, index2));
 
-            //move up then down
-            var up2 = FindResource("CharacterMoveAnimation") as DoubleAnimation;
-            Storyboard.SetTargetProperty(up2, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].Y", index2)));
-            up2.AutoReverse = true;
-            storyBoard.Children.Add(up2);
-
-            //move right
-            var toRight = FindResource("CharacterLeftAnimation") as DoubleAnimation;
-            toRight.To = AverageCharWidth()*-distance;
-            toRight.Duration = TimeSpan.FromSeconds(0.2);
-            Storyboard.SetTargetProperty(toRight, new PropertyPath(
-                String.Format("TextEffects[{0}].Transform.Children[0].X", index2)));
-            storyBoard.Children.Add(toRight);
-
-            storyBoard.Begin(this);
+            return timeLine;
         }
     }
 }
