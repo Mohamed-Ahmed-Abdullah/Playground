@@ -179,7 +179,7 @@ namespace AnimatedTextDemo
                     case ChangeType.Replace:
                     {
                         //put the new char next to the old one 
-                        word = word.Insert(change.Index2.Value, change.Character2 + "");
+                        word = word.Insert(change.Index, change.Character2 + "");
                         //when you insert a charahter the indexes will be effected so you need to push them
                         changes.Skip(changes.IndexOf(change) + 1).ToList().ForEach(f =>
                         {

@@ -181,13 +181,30 @@ namespace AnimatedTextDemo
             }
 
             //if there is more than one replace and the chars is swapping it should be merged to one swap 
-            if (all.Count(w => w.ChangeType == ChangeType.Replace) >= 2)
+            var replaces = all.Where(w => w.ChangeType == ChangeType.Replace).ToList();
+            if (replaces.Count() >= 2)
             {
-                foreach (var change in all.Where(w=>w.ChangeType == ChangeType.Replace))
+                foreach (var rep in replaces.ToList())
                 {
-                    
+                    var first = replaces.FirstOrDefault(r => 
+                        r.Character == rep.Character2 
+                        && r.Character2 == rep.Character);
+                    if (first != null)
+                    {
+                        all.Remove(rep); all.Remove(first);
+                        replaces.Remove(rep); replaces.Remove(first);
+                        all.Add(new Change
+                        {
+                            ChangeType = ChangeType.Swap,
+                            Character = rep.Character,
+                            Character2 = first.Character,
+                            Index = rep.Index,
+                            Index2 = first.Index
+                        });
+                    }
                 }
             }
+
             return all;
         }
 
