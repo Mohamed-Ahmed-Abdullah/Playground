@@ -10,6 +10,59 @@ namespace AnimatedTextUnitTest
     {
         private ChangesFinder _changesFinder = new ChangesFinder();
 
+        #region Two Changes
+        //require rquirez  insert remove 
+        [TestMethod]
+        public void InsertRemove()
+        {
+            var caseInsert = _changesFinder.Find("rquirez", "require");
+            Assert.AreEqual(caseInsert.Count, 2);
+            Assert.AreEqual(caseInsert[0].ChangeType, ChangeType.Insert);
+            Assert.AreEqual(caseInsert[0].Character, 'e');
+            Assert.AreEqual(caseInsert[0].Index, 1);
+
+            Assert.AreEqual(caseInsert[1].ChangeType, ChangeType.Remove);
+            Assert.AreEqual(caseInsert[1].Character, 'z');
+            Assert.AreEqual(caseInsert[1].Index, 6);
+        }
+
+        //require requriez remove swap 
+        [TestMethod]
+        public void RemoveSwap()
+        {
+            var caseInsert = _changesFinder.Find("requriez", "require");
+            Assert.AreEqual(caseInsert.Count, 2);
+            Assert.AreEqual(caseInsert[0].ChangeType, ChangeType.Remove);
+            Assert.AreEqual(caseInsert[0].Character, 'z');
+            Assert.AreEqual(caseInsert[0].Index, 7);
+
+            Assert.AreEqual(caseInsert[1].ChangeType, ChangeType.Swap);
+            Assert.AreEqual(caseInsert[1].Character, 'r');
+            Assert.AreEqual(caseInsert[1].Index, 4);
+            Assert.AreEqual(caseInsert[1].Character2, 'i');
+            Assert.AreEqual(caseInsert[1].Index2, 5);
+        }
+
+        //require rekurie swap replace 
+        [TestMethod]
+        public void SwapReplace()
+        {
+            var caseInsert = _changesFinder.Find("rekurie", "require");
+            Assert.AreEqual(caseInsert.Count, 2);
+        }
+
+        //require rekuir replace insert 
+        [TestMethod]
+        public void ReplaceInsert()
+        {
+            var caseInsert = _changesFinder.Find("rekuir", "require");
+            Assert.AreEqual(caseInsert.Count, 2);
+        }
+
+
+        #endregion
+
+        #region One Change
         [TestMethod]
         public void SwapStart()
         {
@@ -150,5 +203,7 @@ namespace AnimatedTextUnitTest
             Assert.AreEqual(caseReplace[0].Character2, 'd');
             Assert.AreEqual(caseReplace[0].Index, 3);
         }
+        #endregion 
+
     }
 }
